@@ -1,4 +1,4 @@
-import { START_GAME } from "../actions/gameActions";
+import { START_GAME } from "../utils/constants/actionTypes";
 
 const initialState = {
   gameNum: 0

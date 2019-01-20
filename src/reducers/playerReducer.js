@@ -1,7 +1,7 @@
 import cuid from "cuid";
 
-import { ADD_NEW_PLAYER } from "../actions/playerActions";
-import { getRandomColor, generatePlayer } from "../utils/playerHelpers";
+import { ADD_NEW_PLAYER } from "../utils/constants/actionTypes";
+import { getRandomColor, generatePlayer } from "../utils/helpers/playerHelpers";
 
 const firstPlayerColor = getRandomColor();
 const firstPlayerId = cuid();

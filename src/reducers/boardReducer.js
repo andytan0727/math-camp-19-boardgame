@@ -1,10 +1,10 @@
-import { getLayout } from "../utils/boardHelpers";
+import { getLayout } from "../utils/helpers/boardHelpers";
 import {
   GRID_HEIGHT,
   GRID_WIDTH,
   BOX_HEIGHT,
   BOX_WIDTH
-} from "../utils/constants";
+} from "../utils/constants/gridConstants";
 
 const initialState = {
   layout: getLayout({ GRID_WIDTH, GRID_HEIGHT, BOX_WIDTH, BOX_HEIGHT }),
