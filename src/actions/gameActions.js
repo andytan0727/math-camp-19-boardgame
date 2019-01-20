@@ -1,5 +1,5 @@
-export const START_GAME= "START_GAME";
+import { START_GAME } from "../utils/constants/actionTypes";
 
 export const startGame = () => ({
-  type: START_GAME 
+  type: START_GAME
 });
