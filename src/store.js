@@ -6,7 +6,6 @@ import rootReducer from "./reducers/rootReducer";
 const logger = createLogger();
 // const store = createStore(rootReducer, applyMiddleware(thunk, logger));
 
-console.log(process.env.NODE_ENV);
 const store =
   process.env.NODE_ENV === "development"
     ? createStore(rootReducer, applyMiddleware(thunk, logger))
