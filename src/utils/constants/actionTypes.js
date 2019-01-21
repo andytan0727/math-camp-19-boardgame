@@ -1,3 +1,5 @@
+// boardActions
+export const CHANGE_DIMENSIONS = 'CHANGE_DIMENSIONS';
 
 // gameActions
 export const START_GAME= "START_GAME";

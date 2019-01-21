@@ -1,9 +1,9 @@
 export const getLayout = dimensions => {
   const {
-    GRID_WIDTH: gridWidth,
-    GRID_HEIGHT: gridHeight,
-    BOX_WIDTH: boxWidth,
-    BOX_HEIGHT: boxHeight
+    gWidth: gridWidth,
+    gHeight: gridHeight,
+    bWidth: boxWidth,
+    bHeight: boxHeight
   } = dimensions;
 
   // Make a 300 rows game
