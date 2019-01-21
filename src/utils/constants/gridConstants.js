@@ -1,13 +1,13 @@
 const gridMeasurement =
-  window.outerWidth > 672 ? window.outerWidth / 2 - 30 : window.outerWidth - 100;
+  window.innerWidth > 672 ? window.innerWidth / 2 + 180: window.innerWidth - 100;
 
-// full screen
-// const gridMeasurement =
-//   window.innerWidth > 672 ? window.innerWidth - 50 : window.innerWidth - 100;
+// Initial dimensions
 export const GRID_WIDTH = gridMeasurement;
-export const GRID_HEIGHT = gridMeasurement * 3;
 export const BOX_WIDTH = GRID_WIDTH / 10;
-export const BOX_HEIGHT = GRID_HEIGHT / 30;
+
+export const GRID_HEIGHT = BOX_WIDTH * 30;
+export const BOX_HEIGHT = BOX_WIDTH;
+
 export const GAME_ON = 1;
 export const GAME_OVER = 0;
 export const MAX_PLAYERS = 10;
