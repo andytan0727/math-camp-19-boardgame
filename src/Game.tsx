@@ -1,51 +1,58 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Stage } from "react-konva";
-import styled from "styled-components";
-import { Container, Grid, Header, Divider, Segment } from "semantic-ui-react";
+import { Grid, Header, Segment } from "semantic-ui-react";
 
 // Imported actionsCreators
-import { changeDimensions } from "./actions/boardActions";
-import { startGame } from "./actions/gameActions";
-import { addNewPlayer } from "./actions/playerActions";
+import { changeDimensions } from "./store/board/action";
+import { startGame } from "./store/game/action";
+import { addNewPlayer } from "./store/player/action";
 
 // Import canvas components
 import CanvasGrid from "./components/canvas/CanvasGrid";
 
-import "./Game.css";
+// CSS module
+import styles from './Game.module.css';
 
-const MainGameDiv = styled.div`
-  margin: 0px,
-  fontSize: 14px,
-  color: '#2c475d',
-  fontFamily: 'sans-serif',
-`;
+// Interfaces
+import { AppState } from "./store";
 
-const MainBoardDiv = styled.div`
-  display: inline-block;
-  vertical-align: top;
-  padding-left: 16px;
-`;
+interface OwnProps {}
 
-class Game extends Component {
-  testing = () => {
-    this.container.scrollIntoView(false);
+interface ConnectedDispatch {
+  changeDimensions: typeof changeDimensions;
+}
+
+type Props = OwnProps & AppState & ConnectedDispatch;
+
+// Main component
+class Game extends Component<Props, {}> {
+  private mainBoard: React.RefObject<HTMLDivElement>;
+
+  constructor(props: Props) {
+    super(props);
+    this.mainBoard = React.createRef();
   }
 
   handleResize = () => {
     const { changeDimensions } = this.props;
-    const width = this.container.offsetWidth;
-    changeDimensions(width);
+    const node = this.mainBoard.current;
+
+    if (node) {
+      const width = node.offsetWidth;
+      changeDimensions(width);
+    }
   };
 
   componentDidMount() {
-    this.container.scrollIntoView(false);
-    window.addEventListener('resize', this.handleResize);
+    // Using ! to remove undefined/null from type definition
+    const node = this.mainBoard.current!;
+    node.scrollIntoView(false);
+    window.addEventListener("resize", this.handleResize);
   }
 
   componentWillUnmount() {
     console.log("Game unmounted");
-    this.stage.destroy();
   }
 
   render() {
@@ -54,28 +61,19 @@ class Game extends Component {
       grid: { width, height }
     } = this.props.board;
 
-    // Actions
-
     return (
-      <MainBoardDiv id={"main-game"}>
+      <div className={styles.mainGame}>
         <React.Fragment>
           <Grid centered columns={2}>
             <Grid.Column width={11}>
-              <div
-                className={"main-board"}
-                ref={node => (this.container = node)}
-              >
-                <Stage
-                  width={width}
-                  height={height}
-                  ref={node => (this.stage = node)}
-                >
+              <div ref={this.mainBoard}>
+                <Stage width={width} height={height}>
                   <CanvasGrid grid={this.props.board} />
                 </Stage>
               </div>
             </Grid.Column>
             <Grid.Column width={5}>
-              <Container>
+              <div className={styles.playerSidePanel}>
                 <Segment.Group>
                   <Segment>
                     <Header as="h2" content={"Math Camp"} />
@@ -90,19 +88,19 @@ class Game extends Component {
                     pariatur amet aliquip voluptate sit enim et nulla nulla.
                   </Segment>
                   <Segment>
-                    <button onClick={this.testing}>Click Me</button>
+                    {/* <button onClick={this.testing}>Click Me</button> */}
                   </Segment>
                 </Segment.Group>
-              </Container>
+              </div>
             </Grid.Column>
           </Grid>
         </React.Fragment>
-      </MainBoardDiv>
+      </div>
     );
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state: AppState) => {
   const { board, game, players } = state;
   return {
     board,
@@ -114,7 +112,9 @@ const mapStateToProps = state => {
 export default connect(
   mapStateToProps,
   {
-    // mapDispatchToProps object literal
+    /**
+     * mapDispatchToProps object literal
+     */ 
     // board
     changeDimensions,
 

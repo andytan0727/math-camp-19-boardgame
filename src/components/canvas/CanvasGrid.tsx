@@ -1,16 +1,42 @@
-import React from "react";
-import { Layer, Group, Rect, Text } from "react-konva";
+import React, { Component } from "react";
+import Konva from 'konva';
+import { Layer, Group, Rect, Text, KonvaContainerComponent } from "react-konva";
+
+// Interfaces
+import { ILayout, ITileDim } from '../../store/board/types';
 
 const darkRed = "#ff7373";
 const paleRed = "#ffe4e1";
 
-export default class CanvasGrid extends React.Component {
+// Interfaces
+interface OwnProps {}
+
+interface ConnectedState {
+  grid: {
+    layout: ILayout;
+    box: ITileDim;
+  }
+}
+
+interface ConnectedDispatch {}
+
+type Props = OwnProps & ConnectedState & ConnectedDispatch;
+
+export default class CanvasGrid extends Component<Props, {}> {
+  private gridLayer: React.RefObject<KonvaContainerComponent<Konva.Layer<Konva.Node>, Konva.LayerConfig>>;
+
+  constructor(props: Props) {
+    super(props);
+
+    this.gridLayer = React.createRef();
+  }
+
   componentDidMount() {
+    console.log(this.gridLayer.current);
   }
 
   componentWillUnmount() {
     console.log('Grid unmounted!');
-    this.gridLayer.destroy();
   }
 
   render() {
@@ -20,9 +46,9 @@ export default class CanvasGrid extends React.Component {
     } = this.props.grid;
 
     return (
-      <Layer ref={node => (this.gridLayer= node)}>
-        {Object.keys(layout).map(box => {
-          const isEven = !(box % 2);
+      <Layer ref={this.gridLayer as any}>
+        {Object.keys(layout).map((box: string) => {
+          const isEven: boolean = !(parseInt(box) % 2);
 
           return (
             <Group key={`box_${box}`}>

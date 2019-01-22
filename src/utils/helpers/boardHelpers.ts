@@ -1,4 +1,7 @@
-export const getLayout = dimensions => {
+// Interfaces
+import { IDimensions, ILayout } from '../../store/board/types';
+
+export const getLayout = (dimensions: IDimensions): ILayout => {
   const {
     gWidth: gridWidth,
     gHeight: gridHeight,
@@ -7,9 +10,9 @@ export const getLayout = dimensions => {
   } = dimensions;
 
   // Make a 300 rows game
-  let layout = {};
-  const oddRows = [];
-  const evenRows = [];
+  let layout: ILayout = {};
+  const oddRows: number[] = [];
+  const evenRows: number[] = [];
   for (let i = 0; i <= 29; i++) {
     if (i % 2) {
       oddRows.push(i);

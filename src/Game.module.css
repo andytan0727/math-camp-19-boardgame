@@ -1,0 +1,10 @@
+.mainGame {
+  display: inline-block;
+  vertical-align: top;
+  padding-left: 16px;
+}
+
+.playerSidePanel {
+  position: fixed;
+  width: 100px;
+}

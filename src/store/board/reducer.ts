@@ -1,18 +1,17 @@
-import { getLayout } from "../utils/helpers/boardHelpers";
-
-/**
- * Constants
- */
+import { Reducer } from 'redux';
+import { getLayout } from "../../utils/helpers/boardHelpers";
 import {
   GRID_HEIGHT,
   GRID_WIDTH,
   BOX_HEIGHT,
   BOX_WIDTH
-} from "../utils/constants/gridConstants";
-// Actions
-import { CHANGE_DIMENSIONS } from "../utils/constants/actionTypes";
+} from "../../utils/constants/gridConstants";
+import { CHANGE_DIMENSIONS } from "../../utils/constants/actionTypes";
 
-const initialState = {
+// Interfaces
+import { IBoardState, ChangeDimensionAction  } from './types';
+
+const initialState: IBoardState = {
   layout: getLayout({
     gWidth: GRID_WIDTH,
     gHeight: GRID_HEIGHT,
@@ -30,17 +29,17 @@ const initialState = {
   }
 };
 
-export const board = (state = initialState, action) => {
+export const board = (state = initialState, action: ChangeDimensionAction): IBoardState => {
   switch (action.type) {
     case CHANGE_DIMENSIONS:
-      const gWidth = action.width;
-      const bWidth = gWidth / 10;
+      const gWidth: number = action.payload.width;
+      const bWidth: number = gWidth / 10;
 
       // 30 x 10 board
       // 1 row = 10 boxes
       // Grid Height = 30 rows
-      const gHeight = bWidth * 30;
-      const bHeight = bWidth;
+      const gHeight: number = bWidth * 30;
+      const bHeight: number = bWidth;
 
       return {
         ...state,

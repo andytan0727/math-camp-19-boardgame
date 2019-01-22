@@ -1,5 +1,5 @@
 // Constants
-import { ADD_NEW_PLAYER } from "../utils/constants/actionTypes";
+import { ADD_NEW_PLAYER } from "../../utils/constants/actionTypes";
 
 // Actions
 export const addNewPlayer = () => {

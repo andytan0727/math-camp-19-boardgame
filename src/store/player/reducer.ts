@@ -1,12 +1,15 @@
 import cuid from "cuid";
 
-import { ADD_NEW_PLAYER } from "../utils/constants/actionTypes";
-import { getRandomColor, generatePlayer } from "../utils/helpers/playerHelpers";
+import { ADD_NEW_PLAYER } from "../../utils/constants/actionTypes";
+import { getRandomColor, generatePlayer } from "../../utils/helpers/playerHelpers";
 
-const firstPlayerColor = getRandomColor();
+// Interfaces
+import { IPlayers, AddNewPlayerAction } from './types'
+
+const firstPlayerColor = getRandomColor()!;
 const firstPlayerId = cuid();
 
-const initialState = {
+const initialState: IPlayers = {
   count: 1,
   current: {
     id: firstPlayerId,
@@ -28,7 +31,7 @@ const initialState = {
   ]
 };
 
-export const players = (state = initialState, action) => {
+export const players = (state = initialState, action: AddNewPlayerAction) => {
   switch (action.type) {
     case ADD_NEW_PLAYER:
       const newPlayer = generatePlayer();
