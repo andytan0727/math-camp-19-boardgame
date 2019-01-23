@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, Menu } = require("electron");
 const path = require("path");
 const url = require("url");
 const isDev = require("electron-is-dev");
@@ -49,10 +49,77 @@ function createWindow() {
   });
 }
 
+const generateMenu = () => {
+  const template = [
+    {
+      label: "File",
+      submenu: [{ role: "about" }, { role: "quit" }]
+    },
+    {
+      label: "Edit",
+      submenu: [
+        { role: "undo" },
+        { role: "redo" },
+        { type: "separator" },
+        { role: "cut" },
+        { role: "copy" },
+        { role: "paste" },
+        { role: "pasteandmatchstyle" },
+        { role: "delete" },
+        { role: "selectall" }
+      ]
+    },
+    {
+      label: "View",
+      submenu: [
+        { role: "reload" },
+        { role: "forcereload" },
+        { role: "toggledevtools" },
+        { type: "separator" },
+        { role: "resetzoom" },
+        { role: "zoomin" },
+        { role: "zoomout" },
+        { type: "separator" },
+        { role: "togglefullscreen" }
+      ]
+    },
+    {
+      role: "window",
+      submenu: [{ role: "minimize" }, { role: "close" }]
+    },
+    {
+      role: "help",
+      submenu: [
+        {
+          click() {
+            require("electron").shell.openExternal(
+              "https://github.com/andytan0727/math-camp-19-boardgame"
+            );
+          },
+          label: "Learn More"
+        },
+        {
+          click() {
+            require("electron").shell.openExternal(
+              "https://github.com/andytan0727/math-camp-19-boardgame/issues"
+            );
+          },
+          label: "File Issue on GitHub"
+        }
+      ]
+    }
+  ];
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+};
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+app.on("ready", () => {
+  createWindow();
+  generateMenu();
+});
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function() {
