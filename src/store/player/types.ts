@@ -4,8 +4,8 @@ import { ADD_NEW_PLAYER } from "../../utils/constants/actionTypes";
  * Player states
  */
 export interface ISinglePlayerObj {
-  id: string;
-  pos: number;
+  id: number;
+  pos: string;
   color: string;
   score: number;
   path: number[];
@@ -23,4 +23,7 @@ export interface IPlayers {
  */
 export interface AddNewPlayerAction {
   type: typeof ADD_NEW_PLAYER;
+  payload: {
+    curId: number;
+  };
 }

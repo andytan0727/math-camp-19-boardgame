@@ -12,10 +12,11 @@ import { addNewPlayer } from "./store/player/action";
 import CanvasGrid from "./components/canvas/CanvasGrid";
 
 // CSS module
-import styles from './Game.module.css';
+import styles from "./styles/Game.module.css";
 
 // Interfaces
 import { AppState } from "./store";
+import CanvasPlayer from "./components/canvas/CanvasPlayer";
 
 interface OwnProps {}
 
@@ -52,14 +53,19 @@ class Game extends Component<Props, {}> {
   }
 
   componentWillUnmount() {
-    console.log("Game unmounted");
+    window.removeEventListener("resize", this.handleResize);
   }
 
   render() {
     // States
     const {
-      grid: { width, height }
-    } = this.props.board;
+      board: {
+        layout,
+        grid: { width, height },
+        box
+      },
+      players: { all: allPlayers, current: currentPlayer }
+    } = this.props;
 
     return (
       <div className={styles.mainGame}>
@@ -69,6 +75,17 @@ class Game extends Component<Props, {}> {
               <div ref={this.mainBoard}>
                 <Stage width={width} height={height}>
                   <CanvasGrid grid={this.props.board} />
+                  {allPlayers.map((person, ind) => {
+                    return (
+                      <CanvasPlayer
+                        key={`player_${ind}`}
+                        player={person}
+                        current={currentPlayer}
+                        layout={layout}
+                        box={box}
+                      />
+                    );
+                  })}
                 </Stage>
               </div>
             </Grid.Column>
@@ -114,7 +131,8 @@ export default connect(
   {
     /**
      * mapDispatchToProps object literal
-     */ 
+     */
+
     // board
     changeDimensions,
 
