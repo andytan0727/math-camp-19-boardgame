@@ -35,7 +35,7 @@ const initialState: IPlayers = {
 export const players = (state = initialState, action: AddNewPlayerAction) => {
   switch (action.type) {
     case ADD_NEW_PLAYER:
-      const newPlayer = generatePlayer(action.payload.curId);
+      const newPlayer = generatePlayer(state.count);
 
       return {
         ...state,

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Stage } from "react-konva";
-import { Grid, Header, Segment } from "semantic-ui-react";
+import { Grid, Header, Segment, Button } from "semantic-ui-react";
 
 // Imported actionsCreators
 import { changeDimensions } from "./store/board/action";
@@ -22,6 +22,7 @@ interface OwnProps {}
 
 interface ConnectedDispatch {
   changeDimensions: typeof changeDimensions;
+  addNewPlayer: typeof addNewPlayer;
 }
 
 type Props = OwnProps & AppState & ConnectedDispatch;
@@ -59,12 +60,16 @@ class Game extends Component<Props, {}> {
   render() {
     // States
     const {
+      // States
       board: {
         layout,
         grid: { width, height },
         box
       },
-      players: { all: allPlayers, current: currentPlayer }
+      players: { count, all: allPlayers, current: currentPlayer },
+
+      // Dispatches
+      addNewPlayer
     } = this.props;
 
     return (
@@ -105,7 +110,11 @@ class Game extends Component<Props, {}> {
                     pariatur amet aliquip voluptate sit enim et nulla nulla.
                   </Segment>
                   <Segment>
-                    {/* <button onClick={this.testing}>Click Me</button> */}
+                    {count === 10 ? (
+                      <Button disabled>Click Me</Button>
+                    ) : (
+                      <Button onClick={addNewPlayer}>Click Me</Button>
+                    )}
                   </Segment>
                 </Segment.Group>
               </div>

@@ -23,7 +23,4 @@ export interface IPlayers {
  */
 export interface AddNewPlayerAction {
   type: typeof ADD_NEW_PLAYER;
-  payload: {
-    curId: number;
-  };
 }
