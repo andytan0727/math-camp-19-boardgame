@@ -28,7 +28,7 @@ const CanvasGridBox = (props: CanvasGridBoxProps) => {
   const isEven: boolean = !(parseInt(boxId) % 2);
 
   return (
-    <Group key={`box_${boxId}`}>
+    <Group>
       <Rect
         x={Math.floor(layout[boxId].x - boxWidth / 2)}
         y={Math.floor(layout[boxId].y - boxWidth / 2)}
@@ -60,12 +60,15 @@ const CanvasGrid = (props: CanvasGridProps) => {
   return (
     <Layer>
       {Object.keys(layout).map((box: string) => {
-        <CanvasGridBox
-          boxId={box}
-          layout={layout}
-          boxWidth={boxWidth}
-          boxHeight={boxHeight}
-        />;
+        return (
+          <CanvasGridBox
+            key={`box_${box}`}
+            boxId={box}
+            layout={layout}
+            boxWidth={boxWidth}
+            boxHeight={boxHeight}
+          />
+        );
       })}
     </Layer>
   );
