@@ -1,11 +1,9 @@
 import React from "react";
 import { Layer, Group, Rect, Text } from "react-konva";
+import styles from "../../styles/CanvasGrid.module.css";
 
 // Interfaces
 import { ILayout, ITileDim } from "../../store/board/types";
-
-const darkRed = "#ff7373";
-const paleRed = "#ffe4e1";
 
 // Interfaces
 interface CanvasGridBoxProps {
@@ -24,6 +22,7 @@ interface CanvasGridProps {
 
 const CanvasGridBox = (props: CanvasGridBoxProps) => {
   const { boxId, layout, boxWidth, boxHeight } = props;
+  const { darkRed, paleRed } = styles;
 
   const isEven: boolean = !(parseInt(boxId) % 2);
 
