@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import Konva from 'konva';
-import { Layer, Group, Rect, Text, KonvaContainerComponent } from "react-konva";
+import { Layer, Group, Rect, Text } from "react-konva";
 
 // Interfaces
 import { ILayout, ITileDim } from '../../store/board/types';
@@ -23,22 +22,6 @@ interface ConnectedDispatch {}
 type Props = OwnProps & ConnectedState & ConnectedDispatch;
 
 export default class CanvasGrid extends Component<Props, {}> {
-  private gridLayer: React.RefObject<KonvaContainerComponent<Konva.Layer<Konva.Node>, Konva.LayerConfig>>;
-
-  constructor(props: Props) {
-    super(props);
-
-    this.gridLayer = React.createRef();
-  }
-
-  componentDidMount() {
-    console.log(this.gridLayer.current);
-  }
-
-  componentWillUnmount() {
-    console.log('Grid unmounted!');
-  }
-
   render() {
     const {
       layout,
@@ -46,7 +29,7 @@ export default class CanvasGrid extends Component<Props, {}> {
     } = this.props.grid;
 
     return (
-      <Layer ref={this.gridLayer as any}>
+      <Layer>
         {Object.keys(layout).map((box: string) => {
           const isEven: boolean = !(parseInt(box) % 2);
 

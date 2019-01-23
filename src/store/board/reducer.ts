@@ -1,4 +1,3 @@
-import { Reducer } from 'redux';
 import { getLayout } from "../../utils/helpers/boardHelpers";
 import {
   GRID_HEIGHT,
