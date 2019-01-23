@@ -1,6 +1,9 @@
 import cuid from "cuid";
 
-const colorPalette = [
+// Interfaces
+import { ISinglePlayerObj } from "../../store/player/types";
+
+const colorPalette: string[] = [
   "#5f6977",
   "#997f6c",
   "#7f5954",
@@ -14,12 +17,15 @@ const colorPalette = [
 ];
 
 export const getRandomColor = () => {
-  return colorPalette.pop();
+  if (colorPalette.length) {
+    return colorPalette.pop();
+  }
+  return undefined;
 };
 
-export const generatePlayer = () => ({
+export const generatePlayer = (): ISinglePlayerObj => ({
   id: cuid(),
-  color: getRandomColor(),
+  color: getRandomColor()!,
   pos: 1,
   path: [1],
   score: 0,

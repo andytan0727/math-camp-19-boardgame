@@ -1,10 +1,27 @@
-import React from "react";
+import React, { Component } from "react";
 import { Layer, Group, Rect, Text } from "react-konva";
+
+// Interfaces
+import { ILayout, ITileDim } from '../../store/board/types';
 
 const darkRed = "#ff7373";
 const paleRed = "#ffe4e1";
 
-export default class CanvasGrid extends React.PureComponent {
+// Interfaces
+interface OwnProps {}
+
+interface ConnectedState {
+  grid: {
+    layout: ILayout;
+    box: ITileDim;
+  }
+}
+
+interface ConnectedDispatch {}
+
+type Props = OwnProps & ConnectedState & ConnectedDispatch;
+
+export default class CanvasGrid extends Component<Props, {}> {
   render() {
     const {
       layout,
@@ -13,8 +30,8 @@ export default class CanvasGrid extends React.PureComponent {
 
     return (
       <Layer>
-        {Object.keys(layout).map(box => {
-          const isEven = !(box % 2);
+        {Object.keys(layout).map((box: string) => {
+          const isEven: boolean = !(parseInt(box) % 2);
 
           return (
             <Group key={`box_${box}`}>
@@ -33,7 +50,7 @@ export default class CanvasGrid extends React.PureComponent {
                 text={box}
                 padding={4}
                 fontSize={16}
-                fontFamily={'arial'}
+                fontFamily={"arial"}
                 perfectDrawEnabled={false}
               />
             </Group>
