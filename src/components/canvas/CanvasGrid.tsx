@@ -60,12 +60,14 @@ const CanvasGrid = (props: CanvasGridProps) => {
   return (
     <Layer>
       {Object.keys(layout).map((box: string) => {
-        <CanvasGridBox
-          boxId={box}
-          layout={layout}
-          boxWidth={boxWidth}
-          boxHeight={boxHeight}
-        />;
+        return (
+          <CanvasGridBox
+            boxId={box}
+            layout={layout}
+            boxWidth={boxWidth}
+            boxHeight={boxHeight}
+          />
+        );
       })}
     </Layer>
   );
