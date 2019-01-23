@@ -1,5 +1,9 @@
 {
   "name": "math-camp-19-boardgame",
+  "author": {
+    "name": "Andy Tan",
+    "email": "andytan0727@gmail.com"
+  },
   "version": "0.1.0",
   "private": true,
   "main": "public/electron.js",
@@ -29,7 +33,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\""
+    "electron-dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "preelectron-pack": "yarn build",
+    "electron-pack": "build --win"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -40,6 +46,18 @@
     "not ie <= 11",
     "not op_mini all"
   ],
+  "build": {
+    "appId": "math-camp-19-boardgame",
+    "files": [
+      "build/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "target": "portable"
+    }
+  },
   "devDependencies": {
     "@types/jest": "^23.3.13",
     "@types/lodash": "^4.14.120",
