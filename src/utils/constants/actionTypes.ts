@@ -6,4 +6,4 @@ export const START_GAME = "START_GAME";
 
 // playerActions
 export const ADD_NEW_PLAYER = "ADD_NEW_PLAYER";
-export const FILE_CHANGE = 'FILE_CHANGE';
+export const ADD_FILE = 'ADD_FILE';

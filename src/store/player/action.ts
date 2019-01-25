@@ -1,6 +1,6 @@
 // Constants
-import { ADD_NEW_PLAYER, FILE_CHANGE } from "../../utils/constants/actionTypes";
-import { AddNewPlayerAction } from "./types";
+import { ADD_NEW_PLAYER, ADD_FILE } from "../../utils/constants/actionTypes";
+import { AddNewPlayerAction, IScoresAll } from "./types";
 
 // Actions
 export const addNewPlayer = (): AddNewPlayerAction => {
@@ -9,9 +9,11 @@ export const addNewPlayer = (): AddNewPlayerAction => {
   };
 };
 
-export const fileChange = (data: string) => {
+export const addFile = (data: Array<IScoresAll>) => {
   return {
-    type: FILE_CHANGE,
-    payload: data
-  }
-}
+    type: ADD_FILE,
+    payload: {
+      data
+    }
+  };
+};

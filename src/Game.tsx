@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Stage } from "react-konva";
-import { Grid, Header, Segment, Button, Container } from "semantic-ui-react";
+import { Grid, Header, Segment, Button } from "semantic-ui-react";
 import _ from "lodash";
 import {
   isElectron,
@@ -10,20 +10,25 @@ import {
 } from "./utils/helpers/electronHelpers";
 import { changeDimensions } from "./store/board/action";
 import { startGame } from "./store/game/action";
-import { addNewPlayer } from "./store/player/action";
+import { addNewPlayer, addFile } from "./store/player/action";
 import CanvasGrid from "./components/canvas/CanvasGrid";
 import CanvasPlayer from "./components/canvas/CanvasPlayer";
 import styles from "./styles/Game.module.css";
 
+// * TESTING !!!!
+// import { updatePlayerScores } from './utils/helpers/playerHelpers';
+
 // Interfaces
 import { AppState } from "./store";
 import { FSWatcher } from "chokidar";
+import { updatePlayerScores } from "./utils/helpers/playerHelpers";
 
 interface OwnProps {}
 
 interface ConnectedDispatch {
   changeDimensions: typeof changeDimensions;
   addNewPlayer: typeof addNewPlayer;
+  addFile: typeof addFile;
 }
 
 type Props = OwnProps & AppState & ConnectedDispatch;
@@ -60,14 +65,10 @@ class Game extends Component<Props, {}> {
     return watcher;
   };
 
-  getAppState = async () => {
-    const { remote } = await import("electron");
-    return remote.app.getPath("userData");
-  };
-
   componentDidMount() {
     // Using ! to remove undefined/null from type definition
     // Scroll to bottom initially
+    const { addFile } = this.props;
     const node = this.mainBoard.current!;
     node.scrollIntoView(false);
 
@@ -87,7 +88,8 @@ class Game extends Component<Props, {}> {
 
               if (rawGameData) {
                 console.log(`File: ${rawGameData}`);
-                // const gameDataJson = JSON.parse(rawGameData);
+                const gameDataJson = JSON.parse(rawGameData);
+                addFile(gameDataJson);
               }
             })
             .on("change", async path => {
@@ -95,9 +97,9 @@ class Game extends Component<Props, {}> {
               // TODO
               const rawGameData = await readJSONData(path);
               if (rawGameData) {
-                console.log(rawGameData);
-              } else {
-                console.log("The file changed is not sample.json");
+                const jsonDat = JSON.parse(rawGameData);
+                const updatedDat = updatePlayerScores(jsonDat, 1);
+                console.log('Updated Data: ', updatedDat);
               }
             })
             .on("unlink", path => console.log(`File ${path} has been deleted`));
@@ -173,22 +175,11 @@ class Game extends Component<Props, {}> {
                     pariatur amet aliquip voluptate sit enim et nulla nulla.
                   </Segment>
                   <Segment>
-                    <Container>
-                      {count === 10 ? (
-                        <Button disabled>Click Me</Button>
-                      ) : (
-                        <Button onClick={addNewPlayer}>Click Me</Button>
-                      )}
-                      {isElectron ? (
-                        <Button
-                          onClick={() =>
-                            this.getAppState().then(data => console.log(data))
-                          }
-                        >
-                          Home Folder
-                        </Button>
-                      ) : null}
-                    </Container>
+                    {count === 10 ? (
+                      <Button disabled>Click Me</Button>
+                    ) : (
+                      <Button onClick={addNewPlayer}>Click Me</Button>
+                    )}
                   </Segment>
                 </Segment.Group>
               </div>
@@ -223,6 +214,7 @@ export default connect(
     startGame,
 
     // players
-    addNewPlayer
+    addNewPlayer,
+    addFile
   }
 )(Game);
