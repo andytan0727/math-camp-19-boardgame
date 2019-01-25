@@ -1,4 +1,4 @@
-import { ADD_NEW_PLAYER } from "../../utils/constants/actionTypes";
+import { ADD_NEW_PLAYER, FILE_CHANGE } from "../../utils/constants/actionTypes";
 
 /**
  * Player states
@@ -8,6 +8,7 @@ export interface ISinglePlayerObj {
   pos: string;
   color: string;
   score: number;
+  extra: number;
   path: number[];
   boxPosition: number;
 }
@@ -24,3 +25,12 @@ export interface IPlayers {
 export interface AddNewPlayerAction {
   type: typeof ADD_NEW_PLAYER;
 }
+
+export interface FileChangeAction {
+  type: typeof FILE_CHANGE;
+  payload: {
+    data: string
+  }
+}
+
+export type PlayerActions = AddNewPlayerAction & FileChangeAction;

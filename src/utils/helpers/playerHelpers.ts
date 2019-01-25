@@ -34,6 +34,7 @@ export const generatePlayer = (curPlayerId: number): ISinglePlayerObj => ({
   pos: "1",
   path: [1],
   score: 0,
+  extra: 0,
   boxPosition: -1
 });
 

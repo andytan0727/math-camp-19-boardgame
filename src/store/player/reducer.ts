@@ -1,11 +1,11 @@
-import { ADD_NEW_PLAYER } from "../../utils/constants/actionTypes";
+import { ADD_NEW_PLAYER, FILE_CHANGE } from "../../utils/constants/actionTypes";
 import {
   getRandomColor,
   generatePlayer
 } from "../../utils/helpers/playerHelpers";
 
 // Interfaces
-import { IPlayers, AddNewPlayerAction } from "./types";
+import { IPlayers, PlayerActions } from "./types";
 
 const firstPlayerColor = getRandomColor()!;
 const firstPlayerId = 1;
@@ -17,6 +17,7 @@ const initialState: IPlayers = {
     pos: "1",
     color: firstPlayerColor,
     score: 0,
+    extra: 0,
     path: [1],
     boxPosition: -1 // center
   },
@@ -26,13 +27,14 @@ const initialState: IPlayers = {
       pos: "1",
       color: firstPlayerColor,
       score: 0,
+      extra: 0,
       path: [1],
       boxPosition: -1 // center
     }
   ]
 };
 
-export const players = (state = initialState, action: AddNewPlayerAction) => {
+export const players = (state = initialState, action: PlayerActions) => {
   switch (action.type) {
     case ADD_NEW_PLAYER:
       const newPlayer = generatePlayer(state.count);
@@ -42,6 +44,14 @@ export const players = (state = initialState, action: AddNewPlayerAction) => {
         all: [...state.all, newPlayer],
         count: state.count + 1
       };
+
+    case FILE_CHANGE: {
+      console.log(action.payload.data);
+
+      return {
+        ...state
+      }
+    }
 
     default:
       return state;

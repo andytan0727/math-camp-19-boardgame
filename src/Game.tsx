@@ -1,22 +1,23 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Stage } from "react-konva";
-import { Grid, Header, Segment, Button } from "semantic-ui-react";
-
-// Imported actionsCreators
+import { Grid, Header, Segment, Button, Container } from "semantic-ui-react";
+import _ from "lodash";
+import {
+  isElectron,
+  getGameDataFolder,
+  readJSONData
+} from "./utils/helpers/electronHelpers";
 import { changeDimensions } from "./store/board/action";
 import { startGame } from "./store/game/action";
 import { addNewPlayer } from "./store/player/action";
-
-// Import canvas components
 import CanvasGrid from "./components/canvas/CanvasGrid";
-
-// CSS module
+import CanvasPlayer from "./components/canvas/CanvasPlayer";
 import styles from "./styles/Game.module.css";
 
 // Interfaces
 import { AppState } from "./store";
-import CanvasPlayer from "./components/canvas/CanvasPlayer";
+import { FSWatcher } from "chokidar";
 
 interface OwnProps {}
 
@@ -26,6 +27,9 @@ interface ConnectedDispatch {
 }
 
 type Props = OwnProps & AppState & ConnectedDispatch;
+
+let watchFileListener: Promise<FSWatcher> | undefined;
+let gameDataFolder: string;
 
 // Main component
 class Game extends Component<Props, {}> {
@@ -46,15 +50,74 @@ class Game extends Component<Props, {}> {
     }
   };
 
+  initializeWatcher = async () => {
+    const chokidar = await import("chokidar");
+    gameDataFolder = await getGameDataFolder();
+    const watcher = chokidar.watch(gameDataFolder, {
+      ignored: /[\/\\]\./,
+      persistent: true
+    });
+    return watcher;
+  };
+
+  getAppState = async () => {
+    const { remote } = await import("electron");
+    return remote.app.getPath("userData");
+  };
+
   componentDidMount() {
     // Using ! to remove undefined/null from type definition
+    // Scroll to bottom initially
     const node = this.mainBoard.current!;
     node.scrollIntoView(false);
-    window.addEventListener("resize", this.handleResize);
+
+    // Resize listener
+    window.addEventListener("resize", _.debounce(this.handleResize, 500));
+
+    // File change listener
+    watchFileListener = isElectron ? this.initializeWatcher() : undefined;
+
+    if (watchFileListener) {
+      watchFileListener
+        .then(watcher => {
+          watcher
+            .on("add", async path => {
+              console.log(`File ${path} has been added`);
+              const rawGameData = await readJSONData(path);
+
+              if (rawGameData) {
+                console.log(`File: ${rawGameData}`);
+                // const gameDataJson = JSON.parse(rawGameData);
+              }
+            })
+            .on("change", async path => {
+              console.log(`File ${path} has been changed`);
+              // TODO
+              const rawGameData = await readJSONData(path);
+              if (rawGameData) {
+                console.log(rawGameData);
+              } else {
+                console.log("The file changed is not sample.json");
+              }
+            })
+            .on("unlink", path => console.log(`File ${path} has been deleted`));
+        })
+        .catch(err => console.error(`Error occurred: ${err}`));
+    }
   }
 
   componentWillUnmount() {
+    // Remove resize listener
     window.removeEventListener("resize", this.handleResize);
+
+    // Remove chokidar watch file listener
+    if (watchFileListener) {
+      watchFileListener
+        .then(watcher => {
+          watcher.close();
+        })
+        .catch(err => console.log(`Error occurred: ${err}`));
+    }
   }
 
   render() {
@@ -76,7 +139,7 @@ class Game extends Component<Props, {}> {
       <div className={styles.mainGame}>
         <React.Fragment>
           <Grid centered columns={2}>
-            <Grid.Column width={11}>
+            <Grid.Column width={12}>
               <div ref={this.mainBoard}>
                 <Stage width={width} height={height}>
                   <CanvasGrid grid={this.props.board} />
@@ -94,7 +157,7 @@ class Game extends Component<Props, {}> {
                 </Stage>
               </div>
             </Grid.Column>
-            <Grid.Column width={5}>
+            <Grid.Column width={4}>
               <div className={styles.playerSidePanel}>
                 <Segment.Group>
                   <Segment>
@@ -110,11 +173,22 @@ class Game extends Component<Props, {}> {
                     pariatur amet aliquip voluptate sit enim et nulla nulla.
                   </Segment>
                   <Segment>
-                    {count === 10 ? (
-                      <Button disabled>Click Me</Button>
-                    ) : (
-                      <Button onClick={addNewPlayer}>Click Me</Button>
-                    )}
+                    <Container>
+                      {count === 10 ? (
+                        <Button disabled>Click Me</Button>
+                      ) : (
+                        <Button onClick={addNewPlayer}>Click Me</Button>
+                      )}
+                      {isElectron ? (
+                        <Button
+                          onClick={() =>
+                            this.getAppState().then(data => console.log(data))
+                          }
+                        >
+                          Home Folder
+                        </Button>
+                      ) : null}
+                    </Container>
                   </Segment>
                 </Segment.Group>
               </div>

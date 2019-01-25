@@ -20,57 +20,65 @@ interface CanvasGridProps {
   };
 }
 
-const CanvasGridBox = (props: CanvasGridBoxProps) => {
-  const { boxId, layout, boxWidth, boxHeight } = props;
-  const { darkRed, paleRed } = styles;
+class CanvasGridBox extends React.PureComponent<CanvasGridBoxProps, {}> {
+  render() {
+    const { boxId, layout, boxWidth, boxHeight } = this.props;
+    const { darkRed, paleRed } = styles;
 
-  const isEven: boolean = !(parseInt(boxId) % 2);
+    const isEven: boolean = !(parseInt(boxId) % 2);
 
-  return (
-    <Group>
-      <Rect
-        x={Math.floor(layout[boxId].x - boxWidth / 2)}
-        y={Math.floor(layout[boxId].y - boxWidth / 2)}
-        width={boxWidth}
-        height={boxHeight}
-        fill={isEven ? darkRed : paleRed}
-        perfectDrawEnabled={false}
-      />
-      <Text
-        x={Math.floor(layout[boxId].x - boxWidth / 2)}
-        y={Math.floor(layout[boxId].y - boxWidth / 2)}
-        fill={isEven ? paleRed : darkRed}
-        text={boxId}
-        padding={4}
-        fontSize={16}
-        fontFamily={"arial"}
-        perfectDrawEnabled={false}
-      />
-    </Group>
-  );
-};
+    return (
+      <Group>
+        <Rect
+          x={Math.floor(layout[boxId].x - boxWidth / 2)}
+          y={Math.floor(layout[boxId].y - boxWidth / 2)}
+          width={boxWidth}
+          height={boxHeight}
+          fill={isEven ? darkRed : paleRed}
+          perfectDrawEnabled={false}
+        />
+        <Text
+          x={Math.floor(layout[boxId].x - boxWidth / 2)}
+          y={Math.floor(layout[boxId].y - boxWidth / 2)}
+          fill={isEven ? paleRed : darkRed}
+          text={boxId}
+          padding={4}
+          fontSize={16}
+          fontFamily={"arial"}
+          perfectDrawEnabled={false}
+        />
+      </Group>
+    );
+  }
+}
 
-const CanvasGrid = (props: CanvasGridProps) => {
-  const {
-    layout,
-    box: { width: boxWidth, height: boxHeight }
-  } = props.grid;
+class CanvasGrid extends React.Component<CanvasGridProps, {}> {
+  componentWillUpdate() {
+    console.log("receiving props...");
+  }
 
-  return (
-    <Layer>
-      {Object.keys(layout).map((box: string) => {
-        return (
-          <CanvasGridBox
-            key={`box_${box}`}
-            boxId={box}
-            layout={layout}
-            boxWidth={boxWidth}
-            boxHeight={boxHeight}
-          />
-        );
-      })}
-    </Layer>
-  );
-};
+  render() {
+    const {
+      layout,
+      box: { width: boxWidth, height: boxHeight }
+    } = this.props.grid;
+
+    return (
+      <Layer clearBeforeDraw={true}>
+        {Object.keys(layout).map((box: string) => {
+          return (
+            <CanvasGridBox
+              key={`box_${box}`}
+              boxId={box}
+              layout={layout}
+              boxWidth={boxWidth}
+              boxHeight={boxHeight}
+            />
+          );
+        })}
+      </Layer>
+    );
+  }
+}
 
 export default CanvasGrid;
