@@ -28,7 +28,7 @@ const initialState: IBoardState = {
   }
 };
 
-export const board = (state = initialState, action: ChangeDimensionAction): IBoardState => {
+export const board = (state = initialState, action: ChangeDimensionAction) => {
   switch (action.type) {
     case CHANGE_DIMENSIONS:
       const gWidth: number = action.payload.width;

@@ -1,4 +1,9 @@
-import { ADD_NEW_PLAYER, ADD_FILE } from "../../utils/constants/actionTypes";
+import {
+  ADD_NEW_PLAYER,
+  ADD_FILE,
+  MOVE_PLAYER,
+  CHANGE_PLAYER
+} from "../../utils/constants/actionTypes";
 
 /**
  * Player states
@@ -44,15 +49,29 @@ export interface IPlayers {
 /**
  * Player actions
  */
-export interface AddNewPlayerAction {
+interface AddNewPlayerAction {
   type: typeof ADD_NEW_PLAYER;
 }
 
-export interface AddFileAction {
+interface AddFileAction {
   type: typeof ADD_FILE;
   payload: {
     data: Array<IScoresAll>;
   };
 }
 
-export type PlayerActions = AddNewPlayerAction & AddFileAction;
+interface MovePlayerAction {
+  type: typeof MOVE_PLAYER;
+  payload: {
+    newPos: number;
+  };
+}
+
+interface ChangePlayerAction {
+  type: typeof CHANGE_PLAYER;
+}
+
+export type PlayerActions = AddNewPlayerAction &
+  AddFileAction &
+  MovePlayerAction &
+  ChangePlayerAction;

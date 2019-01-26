@@ -23,7 +23,6 @@
 # .env.production.local
 
 # temp files and folders
-data
 temp*
 
 npm-debug.log*

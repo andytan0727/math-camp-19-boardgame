@@ -1,8 +1,14 @@
-import { ADD_NEW_PLAYER, ADD_FILE } from "../../utils/constants/actionTypes";
+import {
+  ADD_NEW_PLAYER,
+  ADD_FILE,
+  // MOVE_PLAYER,
+  CHANGE_PLAYER
+} from "../../utils/constants/actionTypes";
 import {
   // colorPalette,
   getRandomColor,
   generatePlayer,
+  getNextPlayer,
   updatePlayerScores
 } from "../../utils/helpers/playerHelpers";
 
@@ -153,6 +159,36 @@ export const players = (state = initialState, action: PlayerActions) => {
         })
       };
     }
+
+    // case MOVE_PLAYER:
+    //   return {
+    //     ...state,
+    //     current: {
+    //       ...state.current,
+    //       pos: action.payload.newPos,
+    //       boxPosition: -1,
+    //       path: [...state.current.path, action.payload.newPos]
+    //     },
+    //     all: state.all.map(player => {
+    //       if (player.id === state.current.id) {
+    //         return {
+    //           ...player,
+    //           pos: action.payload.newPos,
+    //           boxPosition: -1,
+    //           path: [...player.path, action.payload.newPos]
+    //         };
+    //       }
+    //       return player;
+    //     })
+    //   };
+
+    case CHANGE_PLAYER:
+      const nextPlayer = getNextPlayer(state);
+
+      return {
+        ...state,
+        current: nextPlayer
+      };
 
     default:
       return state;

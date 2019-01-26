@@ -9,7 +9,7 @@ import {
   readJSONData
 } from "./utils/helpers/electronHelpers";
 import { changeDimensions } from "./store/board/action";
-import { startGame } from "./store/game/action";
+import { startGame, initializeData, updateData } from "./store/game/action";
 import { addNewPlayer, addFile } from "./store/player/action";
 import CanvasGrid from "./components/canvas/CanvasGrid";
 import CanvasPlayer from "./components/canvas/CanvasPlayer";
@@ -19,14 +19,22 @@ import styles from "./styles/Game.module.css";
 // import { updatePlayerScores } from './utils/helpers/playerHelpers';
 
 // Interfaces
+import { ISinglePlayerObj } from "./store/player/types";
 import { AppState } from "./store";
 import { FSWatcher } from "chokidar";
-import { updatePlayerScores } from "./utils/helpers/playerHelpers";
+// import { updatePlayerScores } from "./utils/helpers/playerHelpers";
 
 interface OwnProps {}
 
 interface ConnectedDispatch {
+  // Game dispatch
+  initializeData: typeof initializeData;
+  updateData: typeof updateData;
+
+  // Grid dispatch
   changeDimensions: typeof changeDimensions;
+
+  // Player dispatch
   addNewPlayer: typeof addNewPlayer;
   addFile: typeof addFile;
 }
@@ -68,7 +76,7 @@ class Game extends Component<Props, {}> {
   componentDidMount() {
     // Using ! to remove undefined/null from type definition
     // Scroll to bottom initially
-    const { addFile } = this.props;
+    const { addFile, initializeData, updateData } = this.props;
     const node = this.mainBoard.current!;
     node.scrollIntoView(false);
 
@@ -89,17 +97,23 @@ class Game extends Component<Props, {}> {
               if (rawGameData) {
                 console.log(`File: ${rawGameData}`);
                 const gameDataJson = JSON.parse(rawGameData);
-                addFile(gameDataJson);
+
+                // Dispatch an action to Redux
+                console.log(addFile);
+                // addFile(gameDataJson);
+                initializeData(gameDataJson);
               }
             })
             .on("change", async path => {
-              console.log(`File ${path} has been changed`);
-              // TODO
               const rawGameData = await readJSONData(path);
               if (rawGameData) {
                 const jsonDat = JSON.parse(rawGameData);
-                const updatedDat = updatePlayerScores(jsonDat, 1);
-                console.log('Updated Data: ', updatedDat);
+                console.log("Updating data..");
+                // const updatedDat = updatePlayerScores(jsonDat, 1);
+                // console.log("Updated Data: ", updatedDat);
+
+                // Dispatch actions
+                updateData(jsonDat);
               }
             })
             .on("unlink", path => console.log(`File ${path} has been deleted`));
@@ -145,7 +159,7 @@ class Game extends Component<Props, {}> {
               <div ref={this.mainBoard}>
                 <Stage width={width} height={height}>
                   <CanvasGrid grid={this.props.board} />
-                  {allPlayers.map((person, ind) => {
+                  {allPlayers.map((person: ISinglePlayerObj, ind: number) => {
                     return (
                       <CanvasPlayer
                         key={`player_${ind}`}
@@ -212,6 +226,8 @@ export default connect(
 
     // game
     startGame,
+    initializeData,
+    updateData,
 
     // players
     addNewPlayer,
