@@ -1,3 +1,4 @@
+import produce from "immer";
 import { getLayout } from "../../utils/helpers/boardHelpers";
 import {
   GRID_HEIGHT,
@@ -8,7 +9,7 @@ import {
 import { CHANGE_DIMENSIONS } from "../../utils/constants/actionTypes";
 
 // Interfaces
-import { IBoardState, ChangeDimensionAction  } from './types';
+import { IBoardState, ChangeDimensionAction } from "./types";
 
 const initialState: IBoardState = {
   layout: getLayout({
@@ -28,37 +29,32 @@ const initialState: IBoardState = {
   }
 };
 
-export const board = (state = initialState, action: ChangeDimensionAction) => {
+export const board = produce((draft, action: ChangeDimensionAction) => {
   switch (action.type) {
     case CHANGE_DIMENSIONS:
-      const gWidth: number = action.payload.width;
-      const bWidth: number = gWidth / 10;
+      const gWidth = action.payload.width;
+      const bWidth = gWidth / 10;
 
       // 30 x 10 board
       // 1 row = 10 boxes
       // Grid Height = 30 rows
-      const gHeight: number = bWidth * 30;
-      const bHeight: number = bWidth;
+      const gHeight = bWidth * 30;
+      const bHeight = bWidth;
 
-      return {
-        ...state,
-        layout: getLayout({
-          gWidth,
-          gHeight,
-          bWidth,
-          bHeight
-        }),
-        grid: {
-          width: gWidth,
-          height: gHeight
-        },
-        box: {
-          width: bWidth,
-          height: bHeight
-        }
+      draft.layout = getLayout({
+        gWidth,
+        gHeight,
+        bWidth,
+        bHeight
+      });
+      draft.grid = {
+        width: gWidth,
+        height: gHeight
       };
-
-    default:
-      return state;
+      draft.box = {
+        width: bWidth,
+        height: bHeight
+      };
+      return draft;
   }
-};
+}, initialState);

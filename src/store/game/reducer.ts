@@ -1,3 +1,5 @@
+import produce from 'immer';
+
 import {
   START_GAME,
   GAME_STARTED,
@@ -15,33 +17,25 @@ const initialState: IGameState = {
   game: []
 };
 
-export const game = (state = initialState, action: GameAction) => {
+export const game = produce((draft, action: GameAction) => {
   switch (action.type) {
     case START_GAME:
-      return {
-        ...state,
-        status: GAME_STARTED
-      };
+      draft.status = GAME_STARTED
+      return draft;
 
     case INITIALIZE_DATA:
-      return {
-        ...state,
-        game: [...action.payload.data]
-      };
+      draft.game = [...action.payload.data];
+      return draft;
 
     case UPDATE_DATA:
-      return {
-        ...state,
-        game: [...action.payload.data]
-      };
+      draft.game = [...action.payload.data];
+      return draft;
 
     case NEXT_GAME:
-      return {
-        ...state,
-        currentGame: state.currentGame + 1
-      };
+      draft.currentGame++;
+      return draft;
 
     default:
-      return state;
+      return draft;
   }
-};
+}, initialState);

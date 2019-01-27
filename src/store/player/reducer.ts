@@ -1,3 +1,5 @@
+import produce from "immer";
+
 import {
   ADD_NEW_PLAYER,
   ADD_FILE,
@@ -25,7 +27,7 @@ const initialState: IPlayers = {
     pos: "1",
     color: firstPlayerColor,
     game: [],
-    path: [1],
+    path: [1]
   },
   all: [
     {
@@ -33,120 +35,97 @@ const initialState: IPlayers = {
       pos: "1",
       color: firstPlayerColor,
       game: [],
-      path: [1],
+      path: [1]
     },
     {
       id: 2,
       pos: "1",
       color: getRandomColor()!,
       game: [],
-      path: [1],
+      path: [1]
     },
     {
       id: 3,
       pos: "1",
       color: getRandomColor()!,
       game: [],
-      path: [1],
+      path: [1]
     },
     {
       id: 4,
       pos: "1",
       color: getRandomColor()!,
       game: [],
-      path: [1],
+      path: [1]
     },
     {
       id: 5,
       pos: "1",
       color: getRandomColor()!,
       game: [],
-      path: [1],
+      path: [1]
     },
     {
       id: 6,
       pos: "1",
       color: getRandomColor()!,
       game: [],
-      path: [1],
+      path: [1]
     },
     {
       id: 7,
       pos: "1",
       color: getRandomColor()!,
       game: [],
-      path: [1],
+      path: [1]
     },
     {
       id: 8,
       pos: "1",
       color: getRandomColor()!,
       game: [],
-      path: [1],
+      path: [1]
     },
     {
       id: 9,
       pos: "1",
       color: getRandomColor()!,
       game: [],
-      path: [1],
+      path: [1]
     },
     {
       id: 10,
       pos: "1",
       color: getRandomColor()!,
       game: [],
-      path: [1],
+      path: [1]
     }
   ]
 };
 
-export const players = (state = initialState, action: PlayerActions) => {
+export const players = produce((draft, action: PlayerActions) => {
   switch (action.type) {
     case ADD_NEW_PLAYER:
-      const newPlayer = generatePlayer(state.count);
-
-      return {
-        ...state,
-        all: [...state.all, newPlayer],
-        count: state.count + 1
-      };
+      const newPlayer = generatePlayer(draft.count);
+      draft.all.push(newPlayer);
+      draft.count++;
+      return draft;
 
     case ADD_FILE: {
       const updatedData = updatePlayerScores(action.payload.data, 1);
-      console.log(updatedData);
 
-      return {
-        ...state,
-        current: {
-          ...state.current,
-          game: updatedData.current.game.map((game, ind) => {
-            if (
-              state.current.game.length &&
-              state.current.game[ind].score === game.score &&
-              state.current.game[ind].extra === game.extra
-            ) {
-              return state.current.game[ind];
-            }
-            return game;
-          })
-        },
-        all: updatedData.all.map((player, playerIdx) => {
-          return {
-            ...state.all[playerIdx],
-            game: player.game.map((game, gameIdx) => {
-              if (
-                state.all[playerIdx].game.length &&
-                state.all[playerIdx].game[playerIdx].score === game.score &&
-                state.all[playerIdx].game[playerIdx].extra === game.extra
-              ) {
-                return state.all[playerIdx].game[gameIdx];
-              }
-              return game;
-            })
-          };
-        })
-      };
+      // Update current player's scores
+      updatedData.current.game.forEach((game, idx) => {
+        draft.current.game[idx] = game;
+      });
+
+      // Update all players' scores
+      updatedData.all.forEach((player, playerIdx) => {
+        player.game.forEach((game, gameIdx) => {
+          draft.all[playerIdx].game[gameIdx] = game;
+        });
+      });
+      return draft;
     }
 
     // case MOVE_PLAYER:
@@ -172,14 +151,14 @@ export const players = (state = initialState, action: PlayerActions) => {
     //   };
 
     case CHANGE_PLAYER:
-      const nextPlayer = getNextPlayer(state);
+      const nextPlayer = getNextPlayer(draft);
 
       return {
-        ...state,
+        ...draft,
         current: nextPlayer
       };
 
     default:
-      return state;
+      return draft;
   }
-};
+}, initialState);
