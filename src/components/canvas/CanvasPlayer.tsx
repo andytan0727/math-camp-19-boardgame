@@ -1,6 +1,11 @@
 import React from "react";
-import { Motion, spring } from "react-motion";
-import { Circle, Layer, Group, Text } from "react-konva";
+import { Spring, animated } from "react-spring/konva";
+import {
+  // Circle,
+  Layer
+  // Group,
+  // Text
+} from "react-konva";
 import { getPlayerCoordinates } from "../../utils/helpers/playerHelpers";
 import styles from "../../styles/CanvasPlayer.module.css";
 
@@ -8,12 +13,16 @@ import styles from "../../styles/CanvasPlayer.module.css";
 import { ILayout, ITileDim } from "../../store/board/types";
 import { ISinglePlayerObj } from "../../store/player/types";
 
-interface CanvasPlayerProps {
+interface ConnectedProps {
   player: ISinglePlayerObj;
   current: ISinglePlayerObj;
   layout: ILayout;
   box: ITileDim;
 }
+
+interface OwnProps {}
+
+type CanvasPlayerProps = ConnectedProps & OwnProps;
 
 export default class CanvasPlayer extends React.Component<
   CanvasPlayerProps,
@@ -21,7 +30,7 @@ export default class CanvasPlayer extends React.Component<
 > {
   render() {
     const {
-      player: { id, pos, color, boxPosition },
+      player: { id, pos, color },
       current: { id: currentPlayerId },
       layout,
       box,
@@ -29,20 +38,15 @@ export default class CanvasPlayer extends React.Component<
     } = this.props;
     const grid = { layout, box };
 
-    const { x, y } = getPlayerCoordinates(pos, grid, boxPosition);
+    const { x, y } = getPlayerCoordinates(pos, grid);
     const isCurrent = !!(id === currentPlayerId);
 
     return (
       <Layer>
-        <Motion
-          style={{
-            x: spring(x, { stiffness: 70, damping: 14 }),
-            y: spring(y, { stiffness: 70, damping: 20 })
-          }}
-        >
+        <Spring to={{ x, y }}>
           {({ x, y }) => (
-            <Group>
-              <Circle
+            <animated.Group>
+              <animated.Circle
                 x={x}
                 y={y}
                 radius={width / 2 - 10}
@@ -51,7 +55,7 @@ export default class CanvasPlayer extends React.Component<
                 strokeWidth={2}
                 perfectDrawEnabled={false}
               />
-              <Text
+              <animated.Text
                 x={id % 10 !== 0 ? x - 5 : x - 11}
                 y={y - 7}
                 fill={isCurrent ? color : styles.white}
@@ -60,9 +64,9 @@ export default class CanvasPlayer extends React.Component<
                 fontFamily={"arial"}
                 perfectDrawEnabled={false}
               />
-            </Group>
+            </animated.Group>
           )}
-        </Motion>
+        </Spring>
       </Layer>
     );
   }
