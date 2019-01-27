@@ -44,38 +44,23 @@ export const generatePlayer = (curPlayerId: number): ISinglePlayerObj => ({
       extra: 0
     }
   ],
-  boxPosition: -1
 });
 
 export const getPlayerCoordinates = (
   pos: string,
   grid: grid,
-  boxPos: number
 ) => {
   const {
     layout,
-    box: { width, height }
   } = grid;
 
   const x = layout[pos].x;
   const y = layout[pos].y;
 
-  switch (boxPos) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-      return {
-        x: x - width / 4,
-        y: y - height / 4
-      };
-
-    default:
-      return {
-        x,
-        y
-      };
-  }
+  return {
+    x,
+    y
+  };
 };
 
 /**

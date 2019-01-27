@@ -14,7 +14,6 @@ export interface ISinglePlayerObj {
   color: string;
   game: Array<IScores>;
   path: number[];
-  boxPosition: number;
 }
 
 // -----------------------------------------

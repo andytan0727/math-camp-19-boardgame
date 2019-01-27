@@ -26,7 +26,6 @@ const initialState: IPlayers = {
     color: firstPlayerColor,
     game: [],
     path: [1],
-    boxPosition: -1 // center
   },
   all: [
     {
@@ -35,7 +34,6 @@ const initialState: IPlayers = {
       color: firstPlayerColor,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     },
     {
       id: 2,
@@ -43,7 +41,6 @@ const initialState: IPlayers = {
       color: getRandomColor()!,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     },
     {
       id: 3,
@@ -51,7 +48,6 @@ const initialState: IPlayers = {
       color: getRandomColor()!,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     },
     {
       id: 4,
@@ -59,7 +55,6 @@ const initialState: IPlayers = {
       color: getRandomColor()!,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     },
     {
       id: 5,
@@ -67,7 +62,6 @@ const initialState: IPlayers = {
       color: getRandomColor()!,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     },
     {
       id: 6,
@@ -75,7 +69,6 @@ const initialState: IPlayers = {
       color: getRandomColor()!,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     },
     {
       id: 7,
@@ -83,7 +76,6 @@ const initialState: IPlayers = {
       color: getRandomColor()!,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     },
     {
       id: 8,
@@ -91,7 +83,6 @@ const initialState: IPlayers = {
       color: getRandomColor()!,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     },
     {
       id: 9,
@@ -99,7 +90,6 @@ const initialState: IPlayers = {
       color: getRandomColor()!,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     },
     {
       id: 10,
@@ -107,7 +97,6 @@ const initialState: IPlayers = {
       color: getRandomColor()!,
       game: [],
       path: [1],
-      boxPosition: -1 // center
     }
   ]
 };
