@@ -8,14 +8,13 @@ import { board } from "./board/reducer";
 import { game } from "./game/reducer";
 import { players } from "./player/reducer";
 
-const rootReducer = combineReducers({
+const logger = createLogger();
+
+export const rootReducer = combineReducers({
   board,
   game,
   players
 });
-
-const logger = createLogger();
-// const store = createStore(rootReducer, applyMiddleware(thunk, logger));
 
 const store =
   process.env.NODE_ENV === "development"
