@@ -409,7 +409,7 @@ describe("select current player score", () => {
   const newUpdatedState = rootReducer(updatedState, {
     type: UPDATE_CURRENT_GAME_SCORE,
     payload: {
-      curGame: 2,
+      curGame: 1, // * Pay attention to currentGame in game reducer !!!!
       data: {
         score: [11, 12, 2, 21, 52, 61, 7, 82, 92, 120],
         extra: [21, 2, 0, 2, 4, 0, 0, 0, 0, 0]
