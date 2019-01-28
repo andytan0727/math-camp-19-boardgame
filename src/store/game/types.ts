@@ -16,7 +16,7 @@ export interface IAllPlayersGameScore {
 export interface IGameState {
   status: string;
   currentGame: number;
-  game: Array<IAllPlayersGameScore>;
+  gameData: Array<IAllPlayersGameScore>;
 }
 
 /**

@@ -10,7 +10,22 @@ import {
 } from "./utils/helpers/electronHelpers";
 import { changeDimensions } from "./store/board/action";
 import { startGame, initializeData, updateData } from "./store/game/action";
-import { addNewPlayer, addFile } from "./store/player/action";
+import {
+  addNewPlayer,
+  addFile,
+  updateCurrentGameScore
+} from "./store/player/action";
+import {
+  getCurrentGame,
+  getCurrentGameData,
+  getCurrentPlayerScore,
+  getCurrentLayout,
+  getGridDimensions,
+  getBoxDimensions,
+  getCount,
+  getAllPlayers,
+  getCurrentPlayer
+} from "./store/selector";
 import CanvasGrid from "./components/canvas/CanvasGrid";
 import CanvasPlayer from "./components/canvas/CanvasPlayer";
 import styles from "./styles/Game.module.css";
@@ -19,12 +34,25 @@ import styles from "./styles/Game.module.css";
 // import { updatePlayerScores } from './utils/helpers/playerHelpers';
 
 // Interfaces
-import { ISinglePlayerObj } from "./store/player/types";
+import { ISinglePlayerObj, IScoresAll } from "./store/player/types";
 import { AppState } from "./store";
 import { FSWatcher } from "chokidar";
+import { ILayout, IGridDim, ITileDim } from "./store/board/types";
 // import { updatePlayerScores } from "./utils/helpers/playerHelpers";
 
 interface OwnProps {}
+
+interface Selectors {
+  layout: ILayout;
+  grid: IGridDim;
+  box: ITileDim;
+  curGame: number;
+  curGameData: IScoresAll;
+  count: number;
+  allPlayers: Array<ISinglePlayerObj>;
+  currentPlayer: ISinglePlayerObj;
+  curPlayerScore: number;
+}
 
 interface ConnectedDispatch {
   // Game dispatch
@@ -37,9 +65,10 @@ interface ConnectedDispatch {
   // Player dispatch
   addNewPlayer: typeof addNewPlayer;
   addFile: typeof addFile;
+  updateCurrentGameScore: typeof updateCurrentGameScore;
 }
 
-type Props = OwnProps & AppState & ConnectedDispatch;
+type Props = OwnProps & ConnectedDispatch & Selectors;
 
 let watchFileListener: Promise<FSWatcher> | undefined;
 let gameDataFolder: string;
@@ -76,7 +105,14 @@ class Game extends Component<Props, {}> {
   componentDidMount() {
     // Using ! to remove undefined/null from type definition
     // Scroll to bottom initially
-    const { addFile, initializeData, updateData } = this.props;
+    const {
+      // Actions
+      addFile,
+      initializeData,
+      updateData,
+      updateCurrentGameScore
+    } = this.props;
+
     const node = this.mainBoard.current!;
     node.scrollIntoView(false);
 
@@ -106,14 +142,24 @@ class Game extends Component<Props, {}> {
             })
             .on("change", async path => {
               const rawGameData = await readJSONData(path);
+
               if (rawGameData) {
                 const jsonDat = JSON.parse(rawGameData);
                 console.log("Updating data..");
-                // const updatedDat = updatePlayerScores(jsonDat, 1);
-                // console.log("Updated Data: ", updatedDat);
 
                 // Dispatch actions
                 updateData(jsonDat);
+                updateCurrentGameScore(
+                  this.props.curGame,
+                  this.props.curGameData
+                );
+                console.log(`Cur game: ${this.props.curGame}`);
+                console.log(
+                  `Current player data: ${this.props.curGameData.score}`
+                );
+                console.log(
+                  `Current player score: ${this.props.curPlayerScore}`
+                );
               }
             })
             .on("unlink", path => console.log(`File ${path} has been deleted`));
@@ -137,19 +183,18 @@ class Game extends Component<Props, {}> {
   }
 
   render() {
-    // States
     const {
-      // States
-      board: {
-        layout,
-        grid: { width, height },
-        box
-      },
-      players: { count, all: allPlayers, current: currentPlayer },
-
       // Dispatches
       addNewPlayer
     } = this.props;
+
+    // Selectors
+    const { width, height } = this.props.grid;
+    const board = {
+      layout: this.props.layout,
+      grid: this.props.grid,
+      box: this.props.box
+    };
 
     return (
       <div className={styles.mainGame}>
@@ -158,18 +203,18 @@ class Game extends Component<Props, {}> {
             <Grid.Column width={12}>
               <div ref={this.mainBoard}>
                 <Stage width={width} height={height}>
-                  <CanvasGrid grid={this.props.board} />
-                  {allPlayers.map((person: ISinglePlayerObj, ind: number) => {
-                    return (
+                  <CanvasGrid grid={board} />
+                  {this.props.allPlayers.map(
+                    (person: ISinglePlayerObj, ind: number) => (
                       <CanvasPlayer
                         key={`player_${ind}`}
                         player={person}
-                        current={currentPlayer}
-                        layout={layout}
-                        box={box}
+                        current={this.props.currentPlayer}
+                        layout={this.props.layout}
+                        box={this.props.box}
                       />
-                    );
-                  })}
+                    )
+                  )}
                 </Stage>
               </div>
             </Grid.Column>
@@ -189,7 +234,7 @@ class Game extends Component<Props, {}> {
                     pariatur amet aliquip voluptate sit enim et nulla nulla.
                   </Segment>
                   <Segment>
-                    {count === 10 ? (
+                    {this.props.count === 10 ? (
                       <Button disabled>Click Me</Button>
                     ) : (
                       <Button onClick={addNewPlayer}>Click Me</Button>
@@ -206,11 +251,21 @@ class Game extends Component<Props, {}> {
 }
 
 const mapStateToProps = (state: AppState) => {
-  const { board, game, players } = state;
   return {
-    board,
-    game,
-    players
+    // Board
+    layout: getCurrentLayout(state),
+    grid: getGridDimensions(state),
+    box: getBoxDimensions(state),
+
+    // Game
+    curGame: getCurrentGame(state),
+    curGameData: getCurrentGameData(state),
+
+    // Players
+    count: getCount(state),
+    allPlayers: getAllPlayers(state),
+    currentPlayer: getCurrentPlayer(state),
+    curPlayerScore: getCurrentPlayerScore(state)
   };
 };
 
@@ -231,6 +286,7 @@ export default connect(
 
     // players
     addNewPlayer,
-    addFile
+    addFile,
+    updateCurrentGameScore
   }
 )(Game);

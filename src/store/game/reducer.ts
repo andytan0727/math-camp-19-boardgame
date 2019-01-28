@@ -13,8 +13,8 @@ import { IGameState, GameAction } from "./types";
 
 const initialState: IGameState = {
   status: "0",
-  currentGame: 1,
-  game: []
+  currentGame: 2,
+  gameData: []
 };
 
 export const game = produce((draft, action: GameAction) => {
@@ -24,11 +24,11 @@ export const game = produce((draft, action: GameAction) => {
       return draft;
 
     case INITIALIZE_DATA:
-      draft.game = [...action.payload.data];
+      draft.gameData = [...action.payload.data];
       return draft;
 
     case UPDATE_DATA:
-      draft.game = [...action.payload.data];
+      draft.gameData = [...action.payload.data];
       return draft;
 
     case NEXT_GAME:
