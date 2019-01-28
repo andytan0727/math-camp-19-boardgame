@@ -3,7 +3,8 @@ import {
   ADD_NEW_PLAYER,
   ADD_FILE,
   MOVE_PLAYER,
-  CHANGE_PLAYER
+  CHANGE_PLAYER,
+  UPDATE_CURRENT_GAME_SCORE
 } from "../../utils/constants/actionTypes";
 import { IScoresAll } from "./types";
 
@@ -35,5 +36,15 @@ export const movePlayer = (newPos: number) => {
 export const changePlayer = () => {
   return {
     type: CHANGE_PLAYER
+  };
+};
+
+export const updateCurrentGameScore = (curGame: number, data: IScoresAll) => {
+  return {
+    type: UPDATE_CURRENT_GAME_SCORE,
+    payload: {
+      curGame,
+      data
+    }
   };
 };

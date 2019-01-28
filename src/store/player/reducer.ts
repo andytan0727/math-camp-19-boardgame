@@ -4,7 +4,8 @@ import {
   ADD_NEW_PLAYER,
   ADD_FILE,
   // MOVE_PLAYER,
-  CHANGE_PLAYER
+  CHANGE_PLAYER,
+  UPDATE_CURRENT_GAME_SCORE
 } from "../../utils/constants/actionTypes";
 import {
   // colorPalette,
@@ -157,6 +158,28 @@ export const players = produce((draft, action: PlayerActions) => {
         ...draft,
         current: nextPlayer
       };
+
+    case UPDATE_CURRENT_GAME_SCORE:
+      const curGame = action.payload.curGame;
+      const { score, extra } = action.payload.data;
+      const scoreLen = score.length;
+      const extraLen = extra.length;
+
+      for (let i = 0; i < scoreLen && i < extraLen; i++) {
+        if (i === draft.current.id - 1) {
+          draft.current.game[curGame - 1] = {
+            score: score[i],
+            extra: extra[i]
+          };
+        }
+
+        draft.all[i].game[curGame - 1] = {
+          score: score[i],
+          extra: extra[i]
+        };
+      }
+
+      return draft;
 
     default:
       return draft;

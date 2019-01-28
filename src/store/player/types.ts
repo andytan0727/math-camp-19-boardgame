@@ -2,7 +2,8 @@ import {
   ADD_NEW_PLAYER,
   ADD_FILE,
   MOVE_PLAYER,
-  CHANGE_PLAYER
+  CHANGE_PLAYER,
+  UPDATE_CURRENT_GAME_SCORE
 } from "../../utils/constants/actionTypes";
 
 /**
@@ -70,7 +71,17 @@ interface ChangePlayerAction {
   type: typeof CHANGE_PLAYER;
 }
 
+interface UpdateCurrentGameScoreAction {
+  type: typeof UPDATE_CURRENT_GAME_SCORE;
+  payload: {
+    curGame: number;
+    // data: Array<IScoresAll>;
+    data: IScoresAll;
+  };
+}
+
 export type PlayerActions = AddNewPlayerAction &
   AddFileAction &
   MovePlayerAction &
-  ChangePlayerAction;
+  ChangePlayerAction &
+  UpdateCurrentGameScoreAction;

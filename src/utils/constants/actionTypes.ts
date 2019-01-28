@@ -18,3 +18,4 @@ export const ADD_NEW_PLAYER = "ADD_NEW_PLAYER";
 export const ADD_FILE = "ADD_FILE";
 export const MOVE_PLAYER = "MOVE_PLAYER";
 export const CHANGE_PLAYER = "cHANGE_PLAYER";
+export const UPDATE_CURRENT_GAME_SCORE = 'UPDATE_CURRENT_GAME_SCORE';
