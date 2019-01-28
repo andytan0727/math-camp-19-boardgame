@@ -1,6 +1,6 @@
 // Check whether the app opens in web or electron
 export const isElectron =
-  navigator.userAgent.toLowerCase().indexOf(" electron/") > -1;
+  navigator.userAgent.toLowerCase().includes(" electron/");
 
 // Get %APPDATA%\{App_Name}\game_data folder of this app
 export const getGameDataFolder = async () => {
