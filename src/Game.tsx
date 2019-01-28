@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Stage } from "react-konva";
-import { Grid, Header, Segment, Button } from "semantic-ui-react";
+import { Grid, Header, Segment, Button, Input } from "semantic-ui-react";
 import _ from "lodash";
 import {
   isElectron,
@@ -9,11 +9,17 @@ import {
   readJSONData
 } from "./utils/helpers/electronHelpers";
 import { changeDimensions } from "./store/board/action";
-import { startGame, initializeData, updateData } from "./store/game/action";
+import {
+  startGame,
+  initializeData,
+  updateData,
+  setGame
+} from "./store/game/action";
 import {
   addNewPlayer,
   addFile,
-  updateCurrentGameScore
+  updateCurrentGameScore,
+  movePlayer
 } from "./store/player/action";
 import {
   getCurrentGame,
@@ -58,6 +64,7 @@ interface ConnectedDispatch {
   // Game dispatch
   initializeData: typeof initializeData;
   updateData: typeof updateData;
+  setGame: typeof setGame;
 
   // Grid dispatch
   changeDimensions: typeof changeDimensions;
@@ -66,12 +73,14 @@ interface ConnectedDispatch {
   addNewPlayer: typeof addNewPlayer;
   addFile: typeof addFile;
   updateCurrentGameScore: typeof updateCurrentGameScore;
+  movePlayer: typeof movePlayer;
 }
 
 type Props = OwnProps & ConnectedDispatch & Selectors;
 
 let watchFileListener: Promise<FSWatcher> | undefined;
 let gameDataFolder: string;
+let timeout: any;
 
 // Main component
 class Game extends Component<Props, {}> {
@@ -92,6 +101,15 @@ class Game extends Component<Props, {}> {
     }
   };
 
+  handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let curGame: string | undefined = e.target.value;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      this.props.setGame(parseInt(curGame!));
+      curGame = undefined;
+    }, 500);
+  };
+
   initializeWatcher = async () => {
     const chokidar = await import("chokidar");
     gameDataFolder = await getGameDataFolder();
@@ -102,15 +120,25 @@ class Game extends Component<Props, {}> {
     return watcher;
   };
 
+  handleGamePlay = (data: Array<IScoresAll>) => {
+    const { updateData, updateCurrentGameScore, movePlayer } = this.props;
+
+    updateData(data);
+    console.log(`Cur game: ${this.props.curGame}`);
+    console.log(this.props.curGameData);
+    updateCurrentGameScore(this.props.curGame, this.props.curGameData, data);
+    movePlayer(this.props.curGame);
+  };
+
   componentDidMount() {
     // Using ! to remove undefined/null from type definition
     // Scroll to bottom initially
     const {
       // Actions
       addFile,
-      initializeData,
-      updateData,
-      updateCurrentGameScore
+      initializeData
+      // updateData,
+      // updateCurrentGameScore
     } = this.props;
 
     const node = this.mainBoard.current!;
@@ -147,19 +175,21 @@ class Game extends Component<Props, {}> {
                 const jsonDat = JSON.parse(rawGameData);
                 console.log("Updating data..");
 
+                this.handleGamePlay(jsonDat);
+
                 // Dispatch actions
-                updateData(jsonDat);
-                updateCurrentGameScore(
-                  this.props.curGame,
-                  this.props.curGameData
-                );
-                console.log(`Cur game: ${this.props.curGame}`);
-                console.log(
-                  `Current player data: ${this.props.curGameData.score}`
-                );
-                console.log(
-                  `Current player score: ${this.props.curPlayerScore}`
-                );
+                // updateData(jsonDat);
+                // updateCurrentGameScore(
+                //   this.props.curGame,
+                //   this.props.curGameData
+                // );
+                // console.log(`Cur game: ${this.props.curGame}`);
+                // console.log(
+                //   `Current player data: ${this.props.curGameData.score}`
+                // );
+                // console.log(
+                //   `Current player score: ${this.props.curPlayerScore}`
+                // );
               }
             })
             .on("unlink", path => console.log(`File ${path} has been deleted`));
@@ -240,6 +270,13 @@ class Game extends Component<Props, {}> {
                       <Button onClick={addNewPlayer}>Click Me</Button>
                     )}
                   </Segment>
+                  <Segment>
+                    <Input
+                      focus
+                      placeholder={"Game"}
+                      onChange={this.handleInput}
+                    />
+                  </Segment>
                 </Segment.Group>
               </div>
             </Grid.Column>
@@ -283,10 +320,12 @@ export default connect(
     startGame,
     initializeData,
     updateData,
+    setGame,
 
     // players
     addNewPlayer,
     addFile,
-    updateCurrentGameScore
+    updateCurrentGameScore,
+    movePlayer
   }
 )(Game);

@@ -36,7 +36,7 @@ export const getRandomColor = () => {
 export const generatePlayer = (curPlayerId: number): ISinglePlayerObj => ({
   id: curPlayerId + 1,
   color: getRandomColor()!,
-  pos: "1",
+  pos: 1,
   path: [1],
   game: [
     {
