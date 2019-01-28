@@ -1,18 +1,18 @@
-import * as selector from "../selector";
-import { rootReducer } from "../index";
+import * as selector from "./selector";
+import { rootReducer } from "./index";
 import {
   GRID_WIDTH
   // GRID_HEIGHT,
   // BOX_WIDTH,
   // BOX_HEIGHT
-} from "../../utils/constants/gridConstants";
+} from "../utils/constants/gridConstants";
 // import { getLayout } from "../../utils/helpers/boardHelpers";
 import {
   CHANGE_DIMENSIONS,
   ADD_NEW_PLAYER,
   UPDATE_CURRENT_GAME_SCORE,
   UPDATE_DATA
-} from "../../utils/constants/actionTypes";
+} from "../utils/constants/actionTypes";
 
 const state = rootReducer({}, {});
 
