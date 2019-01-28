@@ -24,11 +24,11 @@ export const addFile = (data: Array<IScoresAll>) => {
   };
 };
 
-export const movePlayer = (newPos: number) => {
+export const movePlayer = (curGame: number) => {
   return {
     type: MOVE_PLAYER,
     payload: {
-      newPos
+      curGame
     }
   };
 };
@@ -39,12 +39,13 @@ export const changePlayer = () => {
   };
 };
 
-export const updateCurrentGameScore = (curGame: number, data: IScoresAll) => {
+export const updateCurrentGameScore = (curGame: number, data: IScoresAll, backupData?: Array<IScoresAll>) => {
   return {
     type: UPDATE_CURRENT_GAME_SCORE,
     payload: {
       curGame,
-      data
+      data,
+      backupData
     }
   };
 };

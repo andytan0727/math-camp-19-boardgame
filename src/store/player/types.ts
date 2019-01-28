@@ -11,7 +11,7 @@ import {
  */
 export interface ISinglePlayerObj {
   id: number;
-  pos: string;
+  pos: number;
   color: string;
   game: Array<IScores>;
   path: number[];
@@ -63,7 +63,7 @@ interface AddFileAction {
 interface MovePlayerAction {
   type: typeof MOVE_PLAYER;
   payload: {
-    newPos: number;
+    curGame: number;
   };
 }
 
@@ -77,6 +77,7 @@ interface UpdateCurrentGameScoreAction {
     curGame: number;
     // data: Array<IScoresAll>;
     data: IScoresAll;
+    backupData?: Array<IScoresAll>
   };
 }
 
