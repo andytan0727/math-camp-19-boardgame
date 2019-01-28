@@ -2,11 +2,12 @@ import {
   START_GAME,
   NEXT_GAME,
   INITIALIZE_DATA,
-  UPDATE_DATA
+  UPDATE_DATA,
+  SET_GAME
 } from "../../utils/constants/actionTypes";
 
 // Interfaces
-import { IAllPlayersGameScore } from "./types";
+import { IScoresAll } from "../player/types";
 
 export const startGame = () => {
   return {
@@ -20,7 +21,7 @@ export const nextGame = () => {
   };
 };
 
-export const initializeData = (data: Array<IAllPlayersGameScore>) => {
+export const initializeData = (data: Array<IScoresAll>) => {
   return {
     type: INITIALIZE_DATA,
     payload: {
@@ -29,11 +30,20 @@ export const initializeData = (data: Array<IAllPlayersGameScore>) => {
   };
 };
 
-export const updateData = (data: Array<IAllPlayersGameScore>) => {
+export const updateData = (data: Array<IScoresAll>) => {
   return {
     type: UPDATE_DATA,
     payload: {
       data
+    }
+  };
+};
+
+export const setGame = (game: number) => {
+  return {
+    type: SET_GAME,
+    payload: {
+      game
     }
   };
 };

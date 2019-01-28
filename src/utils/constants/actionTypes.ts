@@ -3,6 +3,7 @@ export const GAME_STARTED = 'GAME_STARTED';
 export const NEXT_GAME = 'NEXT_GAME';
 export const INITIALIZE_DATA = 'INITIALIZE_DATA';
 export const UPDATE_DATA = 'UPDATE_DATA';
+export const SET_GAME = 'SET_GAME';
 export const GAME_OVER = 0;
 export const MAX_PLAYERS = 10;
 

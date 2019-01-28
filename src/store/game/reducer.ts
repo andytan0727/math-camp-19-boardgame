@@ -1,11 +1,12 @@
-import produce from 'immer';
+import produce from "immer";
 
 import {
   START_GAME,
   GAME_STARTED,
   INITIALIZE_DATA,
   UPDATE_DATA,
-  NEXT_GAME
+  NEXT_GAME,
+  SET_GAME
 } from "../../utils/constants/actionTypes";
 
 // Interfaces
@@ -13,14 +14,14 @@ import { IGameState, GameAction } from "./types";
 
 const initialState: IGameState = {
   status: "0",
-  currentGame: 2,
+  currentGame: 1,
   gameData: []
 };
 
 export const game = produce((draft, action: GameAction) => {
   switch (action.type) {
     case START_GAME:
-      draft.status = GAME_STARTED
+      draft.status = GAME_STARTED;
       return draft;
 
     case INITIALIZE_DATA:
@@ -33,6 +34,11 @@ export const game = produce((draft, action: GameAction) => {
 
     case NEXT_GAME:
       draft.currentGame++;
+      return draft;
+
+    case SET_GAME:
+      console.log(`Inside reducer, ${action.payload.game}`);
+      draft.currentGame = action.payload.game;
       return draft;
 
     default:
