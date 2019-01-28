@@ -38,7 +38,7 @@ export default class CanvasPlayer extends React.Component<
     } = this.props;
     const grid = { layout, box };
 
-    const { x, y } = getPlayerCoordinates(pos, grid);
+    const { x, y } = getPlayerCoordinates(pos.toString(), grid);
     const isCurrent = !!(id === currentPlayerId);
 
     return (
