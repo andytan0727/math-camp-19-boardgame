@@ -166,10 +166,11 @@ export const players = produce((draft, action: PlayerActions) => {
 
       const { score, extra } =
         action.payload.data || action.payload.backupData![curGame - 1];
-      const scoreLen = score.length;
-      const extraLen = extra.length;
+      // const scoreLen = score.length;
+      // const extraLen = extra.length;
+      const len = draft.all.length;
 
-      for (let i = 0; i < scoreLen && i < extraLen; i++) {
+      for (let i = 0; i < len; i++) {
         if (i === draft.current.id - 1) {
           draft.current.game[curGame - 1] = {
             score: score[i],
