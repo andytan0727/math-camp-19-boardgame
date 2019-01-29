@@ -8,7 +8,7 @@ const isDev = require("electron-is-dev");
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 let splashScreen;
-const winParams = { width: 1100, height: 800, show: false };
+const winParams = { width: 1200, height: 850, minWidth: 1000, minHeight: 800, show: false };
 
 function createWindow() {
   // Create the browser window.
@@ -25,13 +25,16 @@ function createWindow() {
   mainWindow.loadURL(startUrl);
 
   mainWindow.webContents.on("did-finish-load", () => {
-    mainWindow.show();
+    setTimeout(() => {
+      mainWindow.show();
+      mainWindow.maximize();
 
-    if (splashScreen) {
-      let loadingScreenBounds = splashScreen.getBounds();
-      mainWindow.setBounds(loadingScreenBounds);
-      splashScreen.close();
-    }
+      if (splashScreen) {
+        let loadingScreenBounds = splashScreen.getBounds();
+        mainWindow.setBounds(loadingScreenBounds);
+        splashScreen.close();
+      }
+    }, 3000);
   });
 
   // Open devtools in development environment
@@ -68,8 +71,12 @@ function createWindow() {
 
 const createLoadingScreen = () => {
   splashScreen = new BrowserWindow({
-    ...winParams,
-    parent: mainWindow
+    width: 1300,
+    height: 600,
+    show: false,
+    parent: mainWindow,
+    transparent: true,
+    frame: false
   });
   splashScreen.loadURL(
     isDev
