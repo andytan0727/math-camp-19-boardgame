@@ -52,6 +52,13 @@
       format("svg"); /* Legacy iOS */
 }
 
+/* subscribe */
+@font-face {
+  font-family: "Subscribe";
+  src: /* Modern Browsers */ url("../fonts/subscribe/Subscribe.ttf")
+    format("truetype");
+}
+
 :root {
   --main-color: #ecf0f1;
   --point-color: #555;
@@ -65,40 +72,30 @@
 
 body {
   background-color: #3b3b3b;
+  height: 100vh;
 }
 
 .display {
   position: absolute;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   height: 100%;
   width: 100%;
 }
 
-@keyframes spin {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.cog {
-  transform-origin: 477.5px 226.75px;
-  animation: spin 3s linear infinite;
-}
-
 .text {
   position: absolute;
   top: 50%;
-  /* left: 56%; */
-  left: 725px;
+  left: 56.5%;
+  /* left: 725px; */
   width: 80%;
   display: flex;
   justify-content: center;
   text-align: center;
-  font-family: Roboto, Lato, "Franklin Gothic Medium", "Arial Narrow", Arial,
-    sans-serif;
+  font-family: Subscribe, Roboto, Lato, "Franklin Gothic Medium", "Arial Narrow",
+    Arial, sans-serif;
   /* font-weight: 100; */
   font-size: 130px;
   transform: translateX(-58%) translateY(-50%);

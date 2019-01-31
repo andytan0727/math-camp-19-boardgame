@@ -8,7 +8,13 @@ const isDev = require("electron-is-dev");
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 let splashScreen;
-const winParams = { width: 1200, height: 850, minWidth: 1000, minHeight: 800, show: false };
+const winParams = {
+  width: 1200,
+  height: 850,
+  minWidth: 1000,
+  minHeight: 800,
+  show: false
+};
 
 function createWindow() {
   // Create the browser window.
@@ -71,8 +77,9 @@ function createWindow() {
 
 const createLoadingScreen = () => {
   splashScreen = new BrowserWindow({
-    width: 1300,
-    height: 600,
+    // width: 1300,
+    width: 1000,
+    height: 500,
     show: false,
     parent: mainWindow,
     transparent: true,
@@ -95,6 +102,7 @@ const createLoadingScreen = () => {
   splashScreen.on("closed", () => (splashScreen = null));
   splashScreen.webContents.on("did-finish-load", () => {
     splashScreen.show();
+    splashScreen.center();
   });
 };
 
