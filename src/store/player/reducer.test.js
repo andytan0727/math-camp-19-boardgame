@@ -69,9 +69,6 @@ describe("testing players reducer", () => {
     });
   });
 
-  // TODO
-  test("should handle ADD_FILE", () => {});
-
   test("should handle MOVE_PLAYER", () => {
     const scoresFilledState = {
       count: 1,
@@ -142,46 +139,46 @@ describe("testing players reducer", () => {
 
   test("should handle UPDATE_CURRENT_GAME_SCORE", () => {
     // No backup data supplied, but data is supplied
-    expect(
-      playersReducer(initialState, {
-        type: actionTypes.UPDATE_CURRENT_GAME_SCORE,
-        payload: {
-          curGame: 1,
-          data: {
-            score: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            extra: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
-          }
-        }
-      })
-    ).toEqual({
-      count: 1,
-      current: {
-        id: 1,
-        pos: 1,
-        color: firstPlayerColor,
-        game: [
-          {
-            score: 1,
-            extra: 1
-          }
-        ],
-        path: [1]
-      },
-      all: [
-        {
-          id: 1,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 1,
-              extra: 1
-            }
-          ],
-          path: [1]
-        }
-      ]
-    });
+    // expect(
+    //   playersReducer(initialState, {
+    //     type: actionTypes.UPDATE_CURRENT_GAME_SCORE,
+    //     payload: {
+    //       curGame: 1,
+    //       data: {
+    //         score: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    //         extra: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+    //       }
+    //     }
+    //   })
+    // ).toEqual({
+    //   count: 1,
+    //   current: {
+    //     id: 1,
+    //     pos: 1,
+    //     color: firstPlayerColor,
+    //     game: [
+    //       {
+    //         score: 1,
+    //         extra: 1
+    //       }
+    //     ],
+    //     path: [1]
+    //   },
+    //   all: [
+    //     {
+    //       id: 1,
+    //       pos: 1,
+    //       color: firstPlayerColor,
+    //       game: [
+    //         {
+    //           score: 1,
+    //           extra: 1
+    //         }
+    //       ],
+    //       path: [1]
+    //     }
+    //   ]
+    // });
 
     // No data supplied, but backup data is supplied
     expect(
@@ -189,8 +186,7 @@ describe("testing players reducer", () => {
         type: actionTypes.UPDATE_CURRENT_GAME_SCORE,
         payload: {
           curGame: 1,
-          data: undefined,
-          backupData: [
+          data: [
             {
               score: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
               extra: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
@@ -333,10 +329,28 @@ describe("testing players reducer", () => {
         type: actionTypes.UPDATE_CURRENT_GAME_SCORE,
         payload: {
           curGame: 1,
-          data: {
-            score: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            extra: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
-          }
+          data: [
+            {
+              score: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+              extra: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+            },
+            {
+              score: [2, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+              extra: [2, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+            },
+            {
+              score: [3, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+              extra: [3, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+            },
+            {
+              score: [4, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+              extra: [4, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+            },
+            {
+              score: [5, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+              extra: [5, 2, 1, 2, 1, 2, 1, 2, 1, 2]
+            }
+          ]
         }
       })
     ).toEqual({
