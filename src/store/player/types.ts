@@ -1,7 +1,7 @@
 import {
   ADD_NEW_PLAYER,
-  ADD_FILE,
   MOVE_PLAYER,
+  MOVE_ONCE_PER_PLAYER,
   CHANGE_PLAYER,
   UPDATE_CURRENT_GAME_SCORE
 } from "../../utils/constants/actionTypes";
@@ -53,17 +53,18 @@ interface AddNewPlayerAction {
   type: typeof ADD_NEW_PLAYER;
 }
 
-interface AddFileAction {
-  type: typeof ADD_FILE;
-  payload: {
-    data: Array<IScoresAll>;
-  };
-}
-
 interface MovePlayerAction {
   type: typeof MOVE_PLAYER;
   payload: {
     curGame: number;
+  };
+}
+
+interface MoveOncePerPlayerAction {
+  type: typeof MOVE_ONCE_PER_PLAYER;
+  payload: {
+    curGame: number;
+    scoreType: string;
   };
 }
 
@@ -75,14 +76,13 @@ interface UpdateCurrentGameScoreAction {
   type: typeof UPDATE_CURRENT_GAME_SCORE;
   payload: {
     curGame: number;
-    // data: Array<IScoresAll>;
-    data: IScoresAll;
-    backupData?: Array<IScoresAll>
+    data: Array<IScoresAll>;
+    // data: IScoresAll;
   };
 }
 
 export type PlayerActions = AddNewPlayerAction &
-  AddFileAction &
   MovePlayerAction &
+  MoveOncePerPlayerAction &
   ChangePlayerAction &
   UpdateCurrentGameScoreAction;

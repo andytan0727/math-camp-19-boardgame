@@ -1,8 +1,8 @@
 // Constants
 import {
   ADD_NEW_PLAYER,
-  ADD_FILE,
   MOVE_PLAYER,
+  MOVE_ONCE_PER_PLAYER,
   CHANGE_PLAYER,
   UPDATE_CURRENT_GAME_SCORE
 } from "../../utils/constants/actionTypes";
@@ -15,20 +15,21 @@ export const addNewPlayer = () => {
   };
 };
 
-export const addFile = (data: Array<IScoresAll>) => {
-  return {
-    type: ADD_FILE,
-    payload: {
-      data
-    }
-  };
-};
-
 export const movePlayer = (curGame: number) => {
   return {
     type: MOVE_PLAYER,
     payload: {
       curGame
+    }
+  };
+};
+
+export const moveOncePerPlayer = (curGame: number, scoreType: string) => {
+  return {
+    type: MOVE_ONCE_PER_PLAYER,
+    payload: {
+      curGame,
+      scoreType
     }
   };
 };
@@ -39,13 +40,15 @@ export const changePlayer = () => {
   };
 };
 
-export const updateCurrentGameScore = (curGame: number, data: IScoresAll, backupData?: Array<IScoresAll>) => {
+export const updateCurrentGameScore = (
+  curGame: number,
+  data: Array<IScoresAll>
+) => {
   return {
     type: UPDATE_CURRENT_GAME_SCORE,
     payload: {
       curGame,
-      data,
-      backupData
+      data
     }
   };
 };
