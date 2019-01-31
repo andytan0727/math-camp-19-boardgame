@@ -1,0 +1,58 @@
+/* Candy Beans */
+@font-face {
+  font-family: "CandyBeans";
+  src: url("./fonts/candy_beans/CandyBeans.eot");
+  src: url("./fonts/candy_beans/CandyBeans.eot?#iefix")
+      format("embedded-opentype"),
+    url("./fonts/candy_beans/CandyBeans.svg#CandyBeans") format("svg"),
+    url("./fonts/candy_beans/CandyBeans.ttf") format("truetype"),
+    url("./fonts/candy_beans/CandyBeans.woff") format("woff"),
+    url("./fonts/candy_beans/CandyBeans.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Jelly Crazies */
+@font-face {
+  font-family: "Jelly Crazies";
+  src: url("./fonts/jelly_crazies/Jelly\ Crazies.eot");
+  src: url("./fonts/jelly_crazies/Jelly\ Crazies.eot?#iefix")
+      format("embedded-opentype"),
+    url("./fonts/jelly_crazies/Jelly\ Crazies.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "JellyCrazies";
+  src: url("./fonts/jelly_crazies/JellyCrazies.svg#JellyCrazies") format("svg"),
+    url("./fonts/jelly_crazies/JellyCrazies.ttf") format("truetype"),
+    url("./fonts/jelly_crazies/JellyCrazies.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Fluo Gums";
+  src: url("./fonts/fluo_gums/Fluo Gums.eot");
+  src: url("./fonts/fluo_gums/Fluo Gums.eot?#iefix") format("embedded-opentype"),
+    url("./fonts/fluo_gums/Fluo Gums.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "FluoGums";
+  src: url("./fonts/fluo_gums/FluoGums.svg#FluoGums") format("svg"),
+    url("./fonts/fluo_gums/FluoGums.ttf") format("truetype"),
+    url("./fonts/fluo_gums/FluoGums.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "AgentOrange";
+  src: url("./fonts/agent_orange/AGENTORANGE.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
