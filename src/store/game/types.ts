@@ -13,7 +13,7 @@ import { IScoresAll } from "../player/types";
  */
 
 export interface IGameState {
-  status: string;
+  startGame: boolean;
   currentGame: number;
   gameData: Array<IScoresAll>;
 }
