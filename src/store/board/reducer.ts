@@ -1,35 +1,36 @@
 import produce from "immer";
 import { getLayout } from "../../utils/helpers/boardHelpers";
+// import {
+//   GRID_HEIGHT,
+//   GRID_WIDTH,
+//   BOX_HEIGHT,
+//   BOX_WIDTH
+// } from "../../utils/constants/gridConstants";
 import {
-  GRID_HEIGHT,
-  GRID_WIDTH,
-  BOX_HEIGHT,
-  BOX_WIDTH
-} from "../../utils/constants/gridConstants";
-import { CHANGE_DIMENSIONS } from "../../utils/constants/actionTypes";
+  CHANGE_DIMENSIONS,
+  SET_BOARD_SCALE,
+  SET_GRID_DIMENSION
+} from "../../utils/constants/actionTypes";
 
 // Interfaces
-import { IBoardState, ChangeDimensionAction } from "./types";
+import { IBoardState, IBoardActions } from "./types";
 
 const initialState: IBoardState = {
-  layout: getLayout({
-    gWidth: GRID_WIDTH,
-    gHeight: GRID_HEIGHT,
-    bWidth: BOX_WIDTH,
-    bHeight: BOX_HEIGHT
-  }),
+  layout: { 0: { x: 0, y: 0, id: 1 } }, // Placeholder
   grid: {
-    width: GRID_WIDTH,
-    height: GRID_HEIGHT
+    width: 0,
+    height: 0
   },
   // occupancy: _initializeOccupancy(),
   box: {
-    width: BOX_WIDTH,
-    height: BOX_HEIGHT
-  }
+    width: 0,
+    height: 0
+  },
+  scale: 1,
+  defaultWidth: 1
 };
 
-export const board = produce((draft, action: ChangeDimensionAction) => {
+export const board = produce((draft, action: IBoardActions) => {
   switch (action.type) {
     case CHANGE_DIMENSIONS:
       const gWidth = action.payload.width;
@@ -55,6 +56,19 @@ export const board = produce((draft, action: ChangeDimensionAction) => {
         width: bWidth,
         height: bHeight
       };
+      draft.defaultWidth = gWidth;
+      return draft;
+
+    case SET_BOARD_SCALE:
+      draft.scale = action.payload.width / draft.defaultWidth;
+      return draft;
+
+    case SET_GRID_DIMENSION:
+      draft.grid.width = action.payload.width;
+      draft.grid.height = action.payload.width * 3;
+      return draft;
+
+    default:
       return draft;
   }
 }, initialState);
