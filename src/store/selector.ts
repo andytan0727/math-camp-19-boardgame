@@ -19,8 +19,10 @@ const gridWidth = (state: AppState) => state.board.grid.width;
 const gridHeight = (state: AppState) => state.board.grid.height;
 const boxWidth = (state: AppState) => state.board.box.width;
 const boxHeight = (state: AppState) => state.board.box.height;
+const boardScale = (state: AppState) => state.board.scale;
 
 // From game states
+const startGame = (state: AppState) => state.game.startGame;
 const currentGame = (state: AppState) => state.game.currentGame;
 const gameData = (state: AppState) => state.game.gameData;
 
@@ -28,6 +30,7 @@ const gameData = (state: AppState) => state.game.gameData;
 const count = (state: AppState) => state.players.count;
 const allPlayer = (state: AppState) => state.players.all;
 const currentPlayer = (state: AppState) => state.players.current;
+const currentPlayerPos = (state: AppState) => state.players.current.pos;
 // ---------------------------------------------
 
 /**
@@ -53,12 +56,22 @@ export const getBoxDimensions = createSelector(
   (bWidth, bHeight) => ({ width: bWidth, height: bHeight })
 );
 
+export const getBoardScale = createSelector(
+  boardScale,
+  scale => scale
+);
+
+export const getStartGame = createSelector(
+  startGame,
+  isGameStarted => isGameStarted
+);
+
 export const getCurrentGame = createSelector(
   currentGame,
   curGame => curGame
 );
 
-export const getCurrentGameData = createDeepEqualSelector(
+export const getCurrentGamePreviousData = createDeepEqualSelector(
   [currentGame, gameData],
   (curGame, data) => data[curGame - 1]
 );
@@ -79,4 +92,9 @@ export const getCurrentPlayerScore = createSelector(
   [getCurrentGame, getCurrentPlayer],
   (curGame, curPlayer) =>
     curPlayer.game[curGame - 1] && curPlayer.game[curGame - 1].score
+);
+
+export const getCurrentPlayerPos = createSelector(
+  currentPlayerPos,
+  pos => pos
 );
