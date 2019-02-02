@@ -14,6 +14,7 @@ export const SET_GAME = "SET_GAME";
 export const INITIALIZE_DATA = "INITIALIZE_DATA";
 export const UPDATE_DATA = "UPDATE_DATA";
 export const UPDATE_SCORE = "UPDATE_SCORE";
+export const TOGGLE_BEGIN_CURRENT_GAME = "SET_BEGIN_CURRENT_GAME";
 
 // playerActions
 export const ADD_NEW_PLAYER = "ADD_NEW_PLAYER";

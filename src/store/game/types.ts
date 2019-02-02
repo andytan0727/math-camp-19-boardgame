@@ -3,7 +3,8 @@ import {
   INITIALIZE_DATA,
   UPDATE_DATA,
   NEXT_GAME,
-  SET_GAME
+  SET_GAME,
+  TOGGLE_BEGIN_CURRENT_GAME
 } from "../../utils/constants/actionTypes";
 
 import { IScoresAll } from "../player/types";
@@ -15,6 +16,7 @@ import { IScoresAll } from "../player/types";
 export interface IGameState {
   startGame: boolean;
   currentGame: number;
+  beginCurrentGame: boolean;
   gameData: Array<IScoresAll>;
 }
 
@@ -50,8 +52,13 @@ interface SetGameAction {
   };
 }
 
+interface ToggleBeginCurrentGameAction {
+  type: typeof TOGGLE_BEGIN_CURRENT_GAME;
+}
+
 export type GameAction = StartGameAction &
   NextGameAction &
   InitializeDataAction &
   UpdateDataAction &
-  SetGameAction;
+  SetGameAction &
+  ToggleBeginCurrentGameAction;

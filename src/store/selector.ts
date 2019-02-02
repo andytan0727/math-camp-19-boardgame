@@ -25,6 +25,7 @@ const boardScale = (state: AppState) => state.board.scale;
 const startGame = (state: AppState) => state.game.startGame;
 const currentGame = (state: AppState) => state.game.currentGame;
 const gameData = (state: AppState) => state.game.gameData;
+const beginCurrentGame = (state: AppState) => state.game.beginCurrentGame;
 
 // From players states
 const count = (state: AppState) => state.players.count;
@@ -69,6 +70,11 @@ export const getStartGame = createSelector(
 export const getCurrentGame = createSelector(
   currentGame,
   curGame => curGame
+);
+
+export const getBeginCurrentGame = createSelector(
+  beginCurrentGame,
+  game => game
 );
 
 export const getCurrentGamePreviousData = createDeepEqualSelector(

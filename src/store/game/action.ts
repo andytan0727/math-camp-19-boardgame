@@ -3,7 +3,8 @@ import {
   NEXT_GAME,
   INITIALIZE_DATA,
   UPDATE_DATA,
-  SET_GAME
+  SET_GAME,
+  TOGGLE_BEGIN_CURRENT_GAME
 } from "../../utils/constants/actionTypes";
 
 // Interfaces
@@ -45,5 +46,11 @@ export const setGame = (game: number) => {
     payload: {
       game
     }
+  };
+};
+
+export const toggleBeginCurrentGame = () => {
+  return {
+    type: TOGGLE_BEGIN_CURRENT_GAME
   };
 };
