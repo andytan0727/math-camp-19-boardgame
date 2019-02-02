@@ -1,3 +1,16 @@
 @value white: #ffffff;
 @value darkRed: #ff7373;
 @value paleRed: #ffe4e1;
+
+/* Linear gradients */
+
+@value twitch: linear-gradient(to right, #6441a5, #2a0845);
+@value orangeGradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+@value blueGradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+@value redGradient: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);
+@value purpleBliss: linear-gradient(to right, #360033, #0b8793);
+@value betweenTheClouds: linear-gradient(to right, #73c8a9, #373b44);
+@value servQuick: linear-gradient(to top, #485563, #29323c);
+@value cheerUpEmoKid: linear-gradient(to right, #556270, #ff6b6b);
+@value danceToForget: linear-gradient(to right, #ff4e50, #f9d423);
+@value nelson: linear-gradient(to left, #f2709c, #ff9472);
