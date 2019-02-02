@@ -25,7 +25,6 @@ const initialState = {
   ]
 };
 
-// Test default action
 describe("testing players reducer", () => {
   test("should return default state", () => {
     expect(playersReducer(initialState, {})).toEqual(initialState);
@@ -138,48 +137,6 @@ describe("testing players reducer", () => {
   });
 
   test("should handle UPDATE_CURRENT_GAME_SCORE", () => {
-    // No backup data supplied, but data is supplied
-    // expect(
-    //   playersReducer(initialState, {
-    //     type: actionTypes.UPDATE_CURRENT_GAME_SCORE,
-    //     payload: {
-    //       curGame: 1,
-    //       data: {
-    //         score: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    //         extra: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
-    //       }
-    //     }
-    //   })
-    // ).toEqual({
-    //   count: 1,
-    //   current: {
-    //     id: 1,
-    //     pos: 1,
-    //     color: firstPlayerColor,
-    //     game: [
-    //       {
-    //         score: 1,
-    //         extra: 1
-    //       }
-    //     ],
-    //     path: [1]
-    //   },
-    //   all: [
-    //     {
-    //       id: 1,
-    //       pos: 1,
-    //       color: firstPlayerColor,
-    //       game: [
-    //         {
-    //           score: 1,
-    //           extra: 1
-    //         }
-    //       ],
-    //       path: [1]
-    //     }
-    //   ]
-    // });
-
     // No data supplied, but backup data is supplied
     expect(
       playersReducer(initialState, {
@@ -251,78 +208,13 @@ describe("testing players reducer", () => {
         game: [],
         path: [1]
       },
-      all: [
-        {
-          id: firstPlayerId,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [],
-          path: [1]
-        },
-        {
-          id: 2,
-          pos: 1,
-          color: getRandomColor(),
-          game: [],
-          path: [1]
-        },
-        {
-          id: 3,
-          pos: 1,
-          color: getRandomColor(),
-          game: [],
-          path: [1]
-        },
-        {
-          id: 4,
-          pos: 1,
-          color: getRandomColor(),
-          game: [],
-          path: [1]
-        },
-        {
-          id: 5,
-          pos: 1,
-          color: getRandomColor(),
-          game: [],
-          path: [1]
-        },
-        {
-          id: 6,
-          pos: 1,
-          color: getRandomColor(),
-          game: [],
-          path: [1]
-        },
-        {
-          id: 7,
-          pos: 1,
-          color: getRandomColor(),
-          game: [],
-          path: [1]
-        },
-        {
-          id: 8,
-          pos: 1,
-          color: getRandomColor(),
-          game: [],
-          path: [1]
-        },
-        {
-          id: 9,
-          pos: 1,
-          color: getRandomColor(),
-          game: [],
-          path: [1]
-        },
-        {
-          id: 10,
-          pos: 1,
-          color: getRandomColor(),
-          game: [],
-          path: [1]
-        }
-      ]
+      all: Array.from({ length: 10 }, (_, idx) => idx + 1).map(val => ({
+        id: val === 1 ? firstPlayerId : val,
+        pos: 1,
+        color: val === 1 ? firstPlayerColor : getRandomColor(),
+        game: [],
+        path: [1]
+      }))
     };
     expect(
       playersReducer(tenPlayersState, {
@@ -367,128 +259,18 @@ describe("testing players reducer", () => {
         ],
         path: [1]
       },
-      all: [
-        {
-          id: 1,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 1,
-              extra: 1
-            }
-          ],
-          path: [1]
-        },
-        {
-          id: 2,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 2,
-              extra: 2
-            }
-          ],
-          path: [1]
-        },
-        {
-          id: 3,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 3,
-              extra: 1
-            }
-          ],
-          path: [1]
-        },
-        {
-          id: 4,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 4,
-              extra: 2
-            }
-          ],
-          path: [1]
-        },
-        {
-          id: 5,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 5,
-              extra: 1
-            }
-          ],
-          path: [1]
-        },
-        {
-          id: 6,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 6,
-              extra: 2
-            }
-          ],
-          path: [1]
-        },
-        {
-          id: 7,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 7,
-              extra: 1
-            }
-          ],
-          path: [1]
-        },
-        {
-          id: 8,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 8,
-              extra: 2
-            }
-          ],
-          path: [1]
-        },
-        {
-          id: 9,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 9,
-              extra: 1
-            }
-          ],
-          path: [1]
-        },
-        {
-          id: 10,
-          pos: 1,
-          color: firstPlayerColor,
-          game: [
-            {
-              score: 10,
-              extra: 2
-            }
-          ],
-          path: [1]
-        }
-      ]
+      all: Array.from({ length: 10 }, (_, idx) => idx + 1).map(val => ({
+        id: val,
+        pos: 1,
+        color: firstPlayerColor,
+        game: [
+          {
+            score: val,
+            extra: val % 2 === 0 ? 2 : 1
+          }
+        ],
+        path: [1]
+      }))
     });
   });
 });
