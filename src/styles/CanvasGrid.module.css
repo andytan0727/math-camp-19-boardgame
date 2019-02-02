@@ -1,0 +1,2 @@
+@value colors: './colors.css';
+@value darkRed, paleRed from colors;

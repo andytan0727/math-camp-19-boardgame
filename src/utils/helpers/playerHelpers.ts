@@ -1,20 +1,24 @@
-import cuid from "cuid";
-
 // Interfaces
 import { ISinglePlayerObj } from "../../store/player/types";
+import { ILayout, ITileDim } from "../../store/board/types";
 
-const colorPalette: string[] = [
-  "#5f6977",
-  "#997f6c",
-  "#7f5954",
-  "#d8b477",
-  "#789960",
-  "#a7db64",
-  "#3271ad",
-  "#4c4096",
-  "#c14188",
-  "#8c3c88"
+export const colorPalette = [
+  "red",
+  "orange",
+  "grey",
+  "olive",
+  "green",
+  "teal",
+  "blue",
+  "violet",
+  "purple",
+  "brown"
 ];
+
+interface grid {
+  layout: ILayout;
+  box: ITileDim;
+}
 
 export const getRandomColor = () => {
   if (colorPalette.length) {
@@ -23,11 +27,43 @@ export const getRandomColor = () => {
   return undefined;
 };
 
-export const generatePlayer = (): ISinglePlayerObj => ({
-  id: cuid(),
+export const generatePlayer = (curPlayerId: number): ISinglePlayerObj => ({
+  id: curPlayerId + 1,
   color: getRandomColor()!,
   pos: 1,
   path: [1],
-  score: 0,
-  boxPosition: -1
+  game: [
+    {
+      score: 0,
+      extra: 0
+    }
+  ]
 });
+
+export const getPlayerCoordinates = (pos: string, grid: grid) => {
+  const { layout } = grid;
+
+  const x = layout[pos].x;
+  const y = layout[pos].y;
+
+  return {
+    x,
+    y
+  };
+};
+
+// If current player is the last player
+// return last player
+// else return next player
+export const getNextPlayer = ({
+  all,
+  current,
+  count
+}: {
+  all: Array<ISinglePlayerObj>;
+  current: ISinglePlayerObj;
+  count: number;
+}) =>
+  current.id === count
+    ? all[0]
+    : all.filter(player => player.id === current.id + 1)[0];

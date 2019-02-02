@@ -1,27 +1,62 @@
-import React, { Component } from "react";
+import React from "react";
 import { Layer, Group, Rect, Text } from "react-konva";
+import styles from "../../styles/CanvasGrid.module.css";
 
 // Interfaces
-import { ILayout, ITileDim } from '../../store/board/types';
-
-const darkRed = "#ff7373";
-const paleRed = "#ffe4e1";
+import { ILayout, ITileDim } from "../../store/board/types";
 
 // Interfaces
-interface OwnProps {}
+interface CanvasGridBoxProps {
+  boxId: string;
+  layout: ILayout;
+  boxWidth: number;
+  boxHeight: number;
+}
 
-interface ConnectedState {
+interface CanvasGridProps {
   grid: {
     layout: ILayout;
     box: ITileDim;
+  };
+}
+
+class CanvasGridBox extends React.PureComponent<CanvasGridBoxProps, {}> {
+  render() {
+    const { boxId, layout, boxWidth, boxHeight } = this.props;
+    const { darkRed, paleRed } = styles;
+
+    const isEven: boolean = !(parseInt(boxId) % 2);
+
+    return (
+      <Group>
+        <Rect
+          x={Math.floor(layout[boxId].x - boxWidth / 2)}
+          y={Math.floor(layout[boxId].y - boxWidth / 2)}
+          width={boxWidth}
+          height={boxHeight}
+          fill={isEven ? darkRed : paleRed}
+          perfectDrawEnabled={false}
+        />
+        <Text
+          x={Math.floor(layout[boxId].x - boxWidth / 2)}
+          y={Math.floor(layout[boxId].y - boxWidth / 2)}
+          fill={isEven ? paleRed : darkRed}
+          text={boxId}
+          padding={4}
+          fontSize={16}
+          fontFamily={"arial"}
+          perfectDrawEnabled={false}
+        />
+      </Group>
+    );
   }
 }
 
-interface ConnectedDispatch {}
+class CanvasGrid extends React.Component<CanvasGridProps, {}> {
+  componentWillUpdate() {
+    console.log("receiving props...");
+  }
 
-type Props = OwnProps & ConnectedState & ConnectedDispatch;
-
-export default class CanvasGrid extends Component<Props, {}> {
   render() {
     const {
       layout,
@@ -29,34 +64,21 @@ export default class CanvasGrid extends Component<Props, {}> {
     } = this.props.grid;
 
     return (
-      <Layer>
+      <Layer clearBeforeDraw={true}>
         {Object.keys(layout).map((box: string) => {
-          const isEven: boolean = !(parseInt(box) % 2);
-
           return (
-            <Group key={`box_${box}`}>
-              <Rect
-                x={Math.floor(layout[box].x - boxWidth / 2)}
-                y={Math.floor(layout[box].y - boxWidth / 2)}
-                width={boxWidth}
-                height={boxHeight}
-                fill={isEven ? darkRed : paleRed}
-                perfectDrawEnabled={false}
-              />
-              <Text
-                x={Math.floor(layout[box].x - boxWidth / 2)}
-                y={Math.floor(layout[box].y - boxWidth / 2)}
-                fill={isEven ? paleRed : darkRed}
-                text={box}
-                padding={4}
-                fontSize={16}
-                fontFamily={"arial"}
-                perfectDrawEnabled={false}
-              />
-            </Group>
+            <CanvasGridBox
+              key={`box_${box}`}
+              boxId={box}
+              layout={layout}
+              boxWidth={boxWidth}
+              boxHeight={boxHeight}
+            />
           );
         })}
       </Layer>
     );
   }
 }
+
+export default CanvasGrid;

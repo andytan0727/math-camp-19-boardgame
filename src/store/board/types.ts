@@ -1,4 +1,8 @@
-import { CHANGE_DIMENSIONS } from "../../utils/constants/actionTypes";
+import {
+  CHANGE_DIMENSIONS,
+  SET_BOARD_SCALE,
+  SET_GRID_DIMENSION
+} from "../../utils/constants/actionTypes";
 
 /**
  * Board states
@@ -39,14 +43,34 @@ export interface IBoardState {
   layout: ILayout;
   grid: IGridDim;
   box: ITileDim;
+  scale: number;
+  defaultWidth: number;
 }
 
 /**
  * Board actions
  */
-export interface ChangeDimensionAction {
+interface ChangeDimensionAction {
   type: typeof CHANGE_DIMENSIONS;
   payload: {
     width: number;
   };
 }
+
+interface SetBoardScaleAction {
+  type: typeof SET_BOARD_SCALE;
+  payload: {
+    width: number;
+  };
+}
+
+interface SetGridDimensionAction {
+  type: typeof SET_GRID_DIMENSION;
+  payload: {
+    width: number;
+  };
+}
+
+export type IBoardActions = ChangeDimensionAction &
+  SetBoardScaleAction &
+  SetGridDimensionAction;

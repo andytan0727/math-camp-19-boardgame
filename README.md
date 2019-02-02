@@ -1,6 +1,6 @@
 # Math Camp BoardGame 2019
 --------------------------
-[![Known Vulnerabilities](https://snyk.io/test/github/{username}/{repo}/badge.svg)](https://snyk.io/test/github/andytan0727/math-camp-19-boardgame) 
+[![Known Vulnerabilities](https://snyk.io/test/github/andytan0727/math-camp-19-boardgame/badge.svg)](https://snyk.io/test/github/andytan0727/math-camp-19-boardgame) 
 
 ## Available Scripts
 

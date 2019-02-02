@@ -1,8 +1,10 @@
 .mainGame {
   vertical-align: top;
-  padding-left: 16px;
+  padding-top: 20px;
+  padding-left: 20px;
 }
 
 .playerSidePanel {
   position: fixed;
+  padding-right: 20px;
 }
