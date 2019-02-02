@@ -1,5 +1,4 @@
 import produce from "immer";
-
 import {
   ADD_NEW_PLAYER,
   MOVE_PLAYER,
@@ -8,7 +7,6 @@ import {
   MOVE_ONCE_PER_PLAYER
 } from "../../utils/constants/actionTypes";
 import {
-  // colorPalette,
   getRandomColor,
   generatePlayer,
   getNextPlayer
@@ -36,78 +34,6 @@ const initialState: IPlayers = {
     game: [],
     path: [1]
   }))
-  // all: [
-  //   {
-  //     id: firstPlayerId,
-  //     pos: 1,
-  //     color: firstPlayerColor,
-  //     game: [],
-  //     path: [1]
-  //   },
-  //   {
-  //     id: 2,
-  //     pos: 1,
-  //     color: getRandomColor()!,
-  //     game: [],
-  //     path: [1]
-  //   },
-  //   {
-  //     id: 3,
-  //     pos: 1,
-  //     color: getRandomColor()!,
-  //     game: [],
-  //     path: [1]
-  //   },
-  //   {
-  //     id: 4,
-  //     pos: 1,
-  //     color: getRandomColor()!,
-  //     game: [],
-  //     path: [1]
-  //   },
-  //   {
-  //     id: 5,
-  //     pos: 1,
-  //     color: getRandomColor()!,
-  //     game: [],
-  //     path: [1]
-  //   },
-  //   {
-  //     id: 6,
-  //     pos: 1,
-  //     color: getRandomColor()!,
-  //     game: [],
-  //     path: [1]
-  //   },
-  //   {
-  //     id: 7,
-  //     pos: 1,
-  //     color: getRandomColor()!,
-  //     game: [],
-  //     path: [1]
-  //   },
-  //   {
-  //     id: 8,
-  //     pos: 1,
-  //     color: getRandomColor()!,
-  //     game: [],
-  //     path: [1]
-  //   },
-  //   {
-  //     id: 9,
-  //     pos: 1,
-  //     color: getRandomColor()!,
-  //     game: [],
-  //     path: [1]
-  //   },
-  //   {
-  //     id: 10,
-  //     pos: 1,
-  //     color: getRandomColor()!,
-  //     game: [],
-  //     path: [1]
-  //   }
-  // ]
 };
 
 export const players = produce((draft, action: PlayerActions) => {
@@ -164,13 +90,11 @@ export const players = produce((draft, action: PlayerActions) => {
         draft.current.pos = newPos;
         draft.current.path.push(newPos);
 
-        // Update allPlayers array
-        draft.all[draft.current.id - 1] = draft.current;
+        // // Update allPlayers array
       } else if (newPos < 1) {
         draft.current.pos = 1;
         draft.current.path.push(draft.current.pos);
-        // Update allPlayers array
-        draft.all[draft.current.id - 1] = draft.current;
+        // // Update allPlayers array
         console.log(
           `Player-${
             draft.current.id
@@ -181,27 +105,22 @@ export const players = produce((draft, action: PlayerActions) => {
         draft.current.path.push(
           draft.current.path.includes(draft.current.pos) ? draft.current.pos : 0
         );
-        // Update allPlayers array
-        draft.all[draft.current.id - 1] = draft.current;
+        // // Update allPlayers array
         console.log(`Player-${draft.current.id} won!!! Applause!!!`);
       }
+
+      // Update allPlayers array
+      draft.all[draft.current.id - 1] = draft.current;
 
       return draft;
 
     case CHANGE_PLAYER:
-      const nextPlayer = getNextPlayer(draft);
-      draft.current = nextPlayer;
+      draft.current = getNextPlayer(draft);
       return draft;
 
     case UPDATE_CURRENT_GAME_SCORE:
       const curGame = action.payload.curGame;
-      console.log(`curGame: ${curGame}`);
-
       const { score, extra } = action.payload.data[curGame - 1];
-
-      // const { score, extra } =
-      //   action.payload.data || action.payload.backupData![curGame - 1];
-
       const len = draft.all.length;
 
       for (let i = 0; i < len; i++) {
