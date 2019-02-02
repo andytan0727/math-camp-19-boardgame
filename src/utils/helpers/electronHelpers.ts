@@ -1,6 +1,7 @@
 // Check whether the app opens in web or electron
-export const isElectron =
-  navigator.userAgent.toLowerCase().includes(" electron/");
+export const isElectron = navigator.userAgent
+  .toLowerCase()
+  .includes(" electron/");
 
 // Get %APPDATA%\{App_Name}\game_data folder of this app
 export const getGameDataFolder = async () => {
@@ -17,12 +18,12 @@ export const getGameDataFolder = async () => {
 };
 
 export const readJSONData = async (filePath: string) => {
-  if (~filePath.toLowerCase().indexOf(".json")) {
-    console.log(`Reading sample.json in ${filePath}...`);
+  if (/.*game\.json$/.test(filePath)) {
+    console.log(
+      `Reading ${/^C:\\(.+\\)*(.+\..+)$/.exec(filePath) &&
+        /^C:\\(.+\\)*(.+\..+)$/.exec(filePath)!.slice(-1)[0]} in ${filePath}...`
+    );
     const fs = await import("fs");
-    // const path = await import("path");
-    // const gameDataFolder = await getGameDataFolder();
-    // const gameJsonFile = path.join(gameDataFolder, "sample.json");
     const gameData = fs.readFileSync(filePath);
     return gameData.toString();
   }
