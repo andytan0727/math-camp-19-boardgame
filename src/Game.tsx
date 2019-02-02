@@ -17,7 +17,8 @@ import {
   startGame,
   initializeData,
   updateData,
-  setGame
+  setGame,
+  toggleBeginCurrentGame
 } from "./store/game/action";
 import {
   addNewPlayer,
@@ -38,7 +39,8 @@ import {
   getCount,
   getAllPlayers,
   getCurrentPlayer,
-  getCurrentPlayerPos
+  getCurrentPlayerPos,
+  getBeginCurrentGame
 } from "./store/selector";
 
 // Components
@@ -46,6 +48,8 @@ import CanvasGrid from "./components/canvas/CanvasGrid";
 import CanvasPlayer from "./components/canvas/CanvasPlayer";
 import CanvasScore from "./components/canvas/CanvasScore";
 import PlayerDashboard from "./components/panel/PlayerDashboard";
+
+// CSS Styles
 import styles from "./styles/Game.module.css";
 
 // Interfaces
@@ -53,18 +57,23 @@ import { ISinglePlayerObj, IScoresAll } from "./store/player/types";
 import { AppState } from "./store";
 import { FSWatcher } from "chokidar";
 import { ILayout, IGridDim, ITileDim } from "./store/board/types";
-// import { updatePlayerScores } from "./utils/helpers/playerHelpers";
 
 interface OwnProps {}
 
 interface Selectors {
+  // Board
   layout: ILayout;
   grid: IGridDim;
   box: ITileDim;
   boardScale: number;
+
+  // Game
   isGameStarted: boolean;
   curGame: number;
+  beginCurGame: boolean;
   curGamePrevData: IScoresAll;
+
+  // Player
   count: number;
   allPlayers: Array<ISinglePlayerObj>;
   currentPlayer: ISinglePlayerObj;
@@ -78,6 +87,7 @@ interface ConnectedDispatch {
   updateData: typeof updateData;
   setGame: typeof setGame;
   startGame: typeof startGame;
+  toggleBeginCurrentGame: typeof toggleBeginCurrentGame;
 
   // Grid dispatch
   changeDimensions: typeof changeDimensions;
@@ -141,8 +151,15 @@ class Game extends React.Component<Props, {}> {
     return watcher;
   };
 
+  // Per player
   mainGameLogic = (scoreType: string) => {
-    const { layout, moveOncePerPlayer, changePlayer } = this.props;
+    const {
+      layout,
+      moveOncePerPlayer,
+      changePlayer
+      // currentPlayer
+    } = this.props;
+
     moveOncePerPlayer(this.props.curGame, scoreType);
 
     // Scroll to focus on current player
@@ -165,13 +182,14 @@ class Game extends React.Component<Props, {}> {
 
   handleGamePlay = (data: Array<IScoresAll>) => {
     const {
+      // Selector state
       updateData,
       updateCurrentGameScore,
       curGamePrevData,
-      curGame
-      // movePlayer,
-      // moveOncePerPlayer,
-      // changePlayer
+      curGame,
+
+      // Action
+      toggleBeginCurrentGame
     } = this.props;
 
     const scoreType: string | undefined = _.isEqual(
@@ -191,13 +209,19 @@ class Game extends React.Component<Props, {}> {
 
     updateCurrentGameScore(curGame, data);
 
-    // Main game logic
-    for (let i = 1; i <= 10; i++) {
+    // Begin game
+    toggleBeginCurrentGame();
+
+    for (let i = 0; i < 10; i++) {
       setTimeout(() => {
         this.mainGameLogic(scoreType!);
 
-        if (i === 10) {
-          updateData(data);
+        if (i === 9) {
+          setTimeout(() => {
+            // End game and update data
+            toggleBeginCurrentGame();
+            updateData(data);
+          }, 1000);
         }
       }, 2000 * i);
     }
@@ -208,14 +232,12 @@ class Game extends React.Component<Props, {}> {
       // Actions
       initializeData,
       setGame
-      // updateData
     } = this.props;
 
     // Initialize board size and coordinates when mounted
     this.setBoardDimensions();
 
     // Update dimensions accordingly when resize
-    // window.addEventListener("resize", _.debounce(this.setBoardDimensions, 500));
     window.addEventListener("resize", _.debounce(this.handleResize, 500));
 
     // File change listener
@@ -237,7 +259,12 @@ class Game extends React.Component<Props, {}> {
               }
             })
             .on("change", async path => {
-              const rawGameData = await readJSONData(path);
+              let rawGameData;
+              try {
+                rawGameData = await readJSONData(path);
+              } catch (error) {
+                console.log(`Error: ${error}`);
+              }
 
               if (rawGameData && this.props.isGameStarted) {
                 const jsonData = JSON.parse(rawGameData);
@@ -256,14 +283,6 @@ class Game extends React.Component<Props, {}> {
         })
         .catch(err => console.error(`Error occurred: ${err}`));
     }
-  }
-
-  componentWillUpdate() {
-    console.log("Game: receiving props...");
-  }
-
-  componentDidUpdate() {
-    console.log("Game: Updated");
   }
 
   componentWillUnmount() {
@@ -287,7 +306,10 @@ class Game extends React.Component<Props, {}> {
       startGame,
 
       // Selector state
-      boardScale
+      boardScale,
+      allPlayers,
+      currentPlayer,
+      beginCurGame
     } = this.props;
 
     // Selectors
@@ -311,17 +333,16 @@ class Game extends React.Component<Props, {}> {
                   scaleY={boardScale}
                 >
                   <CanvasGrid grid={board} />
-                  {this.props.allPlayers.map(
-                    (person: ISinglePlayerObj, ind: number) => (
-                      <CanvasPlayer
-                        key={`player_${ind}`}
-                        player={person}
-                        current={this.props.currentPlayer}
-                        layout={this.props.layout}
-                        box={this.props.box}
-                      />
-                    )
-                  )}
+                  {allPlayers.map((person: ISinglePlayerObj) => (
+                    <CanvasPlayer
+                      key={`player_${person.id}`}
+                      player={person}
+                      current={currentPlayer}
+                      layout={this.props.layout}
+                      box={this.props.box}
+                      beginCurGame={beginCurGame}
+                    />
+                  ))}
                   <CanvasScore />
                 </Stage>
               )}
@@ -331,28 +352,30 @@ class Game extends React.Component<Props, {}> {
             <div className={styles.playerSidePanel}>
               <Segment.Group>
                 <Segment>
-                  <Header as="h2" content={"Math Camp"} />
+                  <Header as="h2" content={"Math Camp"} textAlign={"center"} />
                 </Segment>
                 <Segment>
-                  <PlayerDashboard />
-                  {this.props.count === 10 ? (
-                    <Button disabled>Click Me</Button>
-                  ) : (
-                    <Button onClick={addNewPlayer}>Click Me</Button>
-                  )}
-                </Segment>
-                <Segment>
-                  {/* <Input
-                      focus
-                      placeholder={"Game"}
-                      onChange={this.handleInput}
-                    /> */}
-                  <Button
-                    toggle
-                    active={this.props.isGameStarted}
-                    content={"Start Game"}
-                    onClick={startGame}
+                  <PlayerDashboard
+                    beginCurGame={beginCurGame}
+                    current={currentPlayer}
+                    allPlayers={allPlayers}
                   />
+                </Segment>
+                <Segment textAlign={"center"}>
+                  <Button.Group>
+                    <Button
+                      disabled={this.props.count === 10}
+                      onClick={addNewPlayer}
+                      content={"Add Player"}
+                    />
+                    <Button
+                      toggle
+                      active={this.props.isGameStarted}
+                      content={"Start Game"}
+                      onClick={startGame}
+                    />
+                    <Button negative content={"Reset Game"} />
+                  </Button.Group>
                 </Segment>
               </Segment.Group>
             </div>
@@ -374,6 +397,7 @@ const mapStateToProps = (state: AppState) => {
     // Game
     isGameStarted: getStartGame(state),
     curGame: getCurrentGame(state),
+    beginCurGame: getBeginCurrentGame(state),
     curGamePrevData: getCurrentGamePreviousData(state),
 
     // Players
@@ -402,6 +426,7 @@ export default connect(
     initializeData,
     updateData,
     setGame,
+    toggleBeginCurrentGame,
 
     // players
     addNewPlayer,
