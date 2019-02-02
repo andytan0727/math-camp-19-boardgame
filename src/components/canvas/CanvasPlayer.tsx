@@ -1,11 +1,6 @@
 import React from "react";
 import { Spring, animated } from "react-spring/konva";
-import {
-  // Circle,
-  Layer
-  // Group,
-  // Text
-} from "react-konva";
+import { Layer } from "react-konva";
 import { getPlayerCoordinates } from "../../utils/helpers/playerHelpers";
 import styles from "../../styles/CanvasPlayer.module.css";
 
@@ -25,11 +20,12 @@ interface ICoordAndWidth {
 interface DimensionTextProps extends ICoordAndWidth {
   id: number;
   color: string;
+  isCurrent: boolean;
 }
 interface PlayerToAnimateProps extends ICoordAndWidth {
   id: number;
   color: string;
-  scale: number;
+  isCurrent: boolean;
   render: ({ id, width, coord, color }: DimensionTextProps) => React.ReactNode;
 }
 
@@ -38,10 +34,11 @@ interface CanvasPlayerProps {
   current: ISinglePlayerObj;
   layout: ILayout;
   box: ITileDim;
+  beginCurGame: boolean;
 }
 
 const DimensionText = (props: DimensionTextProps) => {
-  const { id, coord, width, color } = props;
+  const { id, coord, width, color, isCurrent } = props;
   let x: number;
   let y: number;
   let fontSize: number;
@@ -60,7 +57,7 @@ const DimensionText = (props: DimensionTextProps) => {
     <animated.Text
       x={x}
       y={y}
-      fill={color}
+      fill={isCurrent ? color : styles.white}
       text={id.toString()}
       fontSize={fontSize}
       fontFamily={"arial"}
@@ -71,62 +68,60 @@ const DimensionText = (props: DimensionTextProps) => {
 };
 
 const PlayerToAnimate = (props: PlayerToAnimateProps) => {
-  const { id, coord, width, color, scale, render } = props;
+  const { id, coord, width, color, isCurrent, render } = props;
   return (
     <animated.Group>
       <animated.Circle
         x={coord.x}
         y={coord.y}
         radius={width / 2 - 10}
-        fill={styles.white}
-        scale={{ x: scale, y: scale }}
+        fill={isCurrent ? styles.white : color}
         stroke={color}
         strokeWidth={4}
         perfectDrawEnabled={false}
       />
-      {render({ id, width, coord, color })}
+      {render({ id, width, coord, color, isCurrent })}
     </animated.Group>
   );
 };
 
-export default class CanvasPlayer extends React.Component<
+export default class CanvasPlayer extends React.PureComponent<
   CanvasPlayerProps,
   {}
 > {
   render() {
     const {
       player: { id, pos, color },
-      // current: { id: currentPlayerId },
+      current,
       layout,
       box,
-      box: { width }
+      box: { width },
+      beginCurGame
     } = this.props;
     const grid = { layout, box };
 
     const coord = getPlayerCoordinates(pos.toString(), grid);
     const { x, y } = coord;
-    // const isCurrent = !!(id === currentPlayerId);
+    const curPlayerId = id === 10 ? current.id + 9 : current.id - 1;
+    const isCurrent = id === curPlayerId && beginCurGame;
 
     return (
       <Layer>
-        <Spring
-          from={{ scale: 1 }}
-          to={{ x, y, scale: 1.5 }}
-          after={{ scale: 1 }}
-        >
-          {({ x, y, scale }) => (
+        <Spring to={{ x, y }}>
+          {({ x, y }) => (
             <PlayerToAnimate
               id={id}
               coord={{ x, y }}
               width={width}
               color={color}
-              scale={scale}
-              render={({ id, width, coord, color }) => (
+              isCurrent={isCurrent}
+              render={({ id, width, coord, color, isCurrent }) => (
                 <DimensionText
                   id={id}
                   width={width}
                   coord={coord}
                   color={color}
+                  isCurrent={isCurrent}
                 />
               )}
             />
