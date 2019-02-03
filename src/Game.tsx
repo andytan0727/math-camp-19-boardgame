@@ -6,7 +6,8 @@ import _ from "lodash";
 import {
   isElectron,
   getGameDataFolder,
-  readJSONData
+  readJSONData,
+  writeJSONData
 } from "./utils/helpers/electronHelpers";
 import {
   changeDimensions,
@@ -30,6 +31,7 @@ import {
 import {
   getStartGame,
   getCurrentGame,
+  getGameData,
   getCurrentGamePreviousData,
   getCurrentPlayerScore,
   getCurrentLayout,
@@ -72,6 +74,7 @@ interface Selectors {
   curGame: number;
   beginCurGame: boolean;
   curGamePrevData: IScoresAll;
+  gameData: Array<IScoresAll>;
 
   // Player
   count: number;
@@ -221,6 +224,18 @@ class Game extends React.Component<Props, {}> {
             // End game and update data
             toggleBeginCurrentGame();
             updateData(data);
+
+            // Write file to be restored if unexpected bug happens
+            writeJSONData({
+              game: {
+                currentGame: this.props.curGame,
+                gameData: this.props.gameData
+              },
+              players: {
+                current: this.props.currentPlayer,
+                all: this.props.allPlayers
+              }
+            });
           }, 1000);
         }
       }, 2000 * i);
@@ -374,7 +389,7 @@ class Game extends React.Component<Props, {}> {
                       content={"Start Game"}
                       onClick={startGame}
                     />
-                    <Button negative content={"Reset Game"} />
+                    <Button negative content={"Restore Game"} />
                   </Button.Group>
                 </Segment>
               </Segment.Group>
@@ -399,6 +414,7 @@ const mapStateToProps = (state: AppState) => {
     curGame: getCurrentGame(state),
     beginCurGame: getBeginCurrentGame(state),
     curGamePrevData: getCurrentGamePreviousData(state),
+    gameData: getGameData(state),
 
     // Players
     count: getCount(state),
