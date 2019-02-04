@@ -52,6 +52,7 @@ import CanvasGrid from "./components/canvas/CanvasGrid";
 import CanvasPlayer from "./components/canvas/CanvasPlayer";
 import CanvasScore from "./components/canvas/CanvasScore";
 import PlayerDashboard from "./components/panel/PlayerDashboard";
+import RestoreGameModal from "./components/panel/RestoreGameModal";
 
 // CSS Styles
 import styles from "./styles/Game.module.css";
@@ -116,11 +117,15 @@ let gameDataFolder: string;
 // let timeout: any;
 
 // Main component
-class Game extends React.Component<Props, {}> {
+class Game extends React.Component<Props, { openModal: boolean }> {
   private mainBoard: React.RefObject<HTMLDivElement>;
 
   constructor(props: Props) {
     super(props);
+    this.state = {
+      // Restore game modal
+      openModal: false
+    };
     this.mainBoard = React.createRef();
   }
 
@@ -146,6 +151,12 @@ class Game extends React.Component<Props, {}> {
       // Renew the grid dimension for future resize
       setGridDimension(width);
     }
+  };
+
+  toggleModalOpenClose = () => {
+    this.setState(prevState => ({
+      openModal: !prevState.openModal
+    }));
   };
 
   handleRestoreGame = async () => {
@@ -362,6 +373,8 @@ class Game extends React.Component<Props, {}> {
       box: this.props.box
     };
 
+    const { openModal: open } = this.state;
+
     return (
       <div className={styles.mainGame}>
         <Grid centered columns={2} divided>
@@ -419,9 +432,14 @@ class Game extends React.Component<Props, {}> {
                     <Button
                       negative
                       content={"Restore Game"}
-                      onClick={this.handleRestoreGame}
+                      onClick={this.toggleModalOpenClose}
                     />
                   </Button.Group>
+                  <RestoreGameModal
+                    open={open}
+                    handleClose={this.toggleModalOpenClose}
+                    handleRestore={this.handleRestoreGame}
+                  />
                 </Segment>
               </Segment.Group>
             </div>
