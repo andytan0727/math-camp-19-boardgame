@@ -1,4 +1,5 @@
 import produce from "immer";
+import deepFreeze from "deep-freeze";
 import { board as boardReducer } from "./reducer";
 import { getLayout } from "../../utils/helpers/boardHelpers";
 import * as actionTypes from "../../utils/constants/actionTypes";
@@ -16,6 +17,8 @@ const initialState = {
   scale: 1,
   defaultWidth: 1
 };
+
+deepFreeze(initialState);
 
 describe("testing board reducer", () => {
   test("should return default state", () => {

@@ -1,3 +1,4 @@
+import deepFreeze from "deep-freeze";
 import { players as playersReducer } from "./reducer";
 import { getRandomColor } from "../../utils/helpers/playerHelpers";
 import * as actionTypes from "../../utils/constants/actionTypes";
@@ -24,6 +25,8 @@ const initialState = {
     }
   ]
 };
+
+deepFreeze(initialState);
 
 describe("testing players reducer", () => {
   test("should return default state", () => {
@@ -98,6 +101,8 @@ describe("testing players reducer", () => {
         }
       ]
     };
+    deepFreeze(scoresFilledState);
+
     expect(
       playersReducer(scoresFilledState, {
         type: actionTypes.MOVE_PLAYER,
@@ -216,6 +221,9 @@ describe("testing players reducer", () => {
         path: [1]
       }))
     };
+
+    deepFreeze(tenPlayersState);
+
     expect(
       playersReducer(tenPlayersState, {
         type: actionTypes.UPDATE_CURRENT_GAME_SCORE,

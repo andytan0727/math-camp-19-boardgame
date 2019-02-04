@@ -1,3 +1,4 @@
+import deepFreeze from "deep-freeze";
 import { game as gameReducer } from "./reducer";
 import * as actionTypes from "../../utils/constants/actionTypes";
 
@@ -7,6 +8,8 @@ const initialState = {
   beginCurrentGame: false,
   gameData: []
 };
+
+deepFreeze(initialState);
 
 describe("testing game reducer", () => {
   // default action
