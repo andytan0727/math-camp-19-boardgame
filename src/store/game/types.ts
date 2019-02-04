@@ -4,7 +4,8 @@ import {
   UPDATE_DATA,
   NEXT_GAME,
   SET_GAME,
-  TOGGLE_BEGIN_CURRENT_GAME
+  TOGGLE_BEGIN_CURRENT_GAME,
+  RESTORE_GAME
 } from "../../utils/constants/actionTypes";
 
 import { IScoresAll } from "../player/types";
@@ -56,9 +57,20 @@ interface ToggleBeginCurrentGameAction {
   type: typeof TOGGLE_BEGIN_CURRENT_GAME;
 }
 
+interface RestoreGameAction {
+  type: typeof RESTORE_GAME;
+  payload: {
+    game: {
+      currentGame: number;
+      gameData: Array<IScoresAll>;
+    };
+  };
+}
+
 export type GameAction = StartGameAction &
   NextGameAction &
   InitializeDataAction &
   UpdateDataAction &
   SetGameAction &
-  ToggleBeginCurrentGameAction;
+  ToggleBeginCurrentGameAction &
+  RestoreGameAction;

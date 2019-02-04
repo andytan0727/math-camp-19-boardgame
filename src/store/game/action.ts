@@ -4,7 +4,8 @@ import {
   INITIALIZE_DATA,
   UPDATE_DATA,
   SET_GAME,
-  TOGGLE_BEGIN_CURRENT_GAME
+  TOGGLE_BEGIN_CURRENT_GAME,
+  RESTORE_GAME
 } from "../../utils/constants/actionTypes";
 
 // Interfaces
@@ -52,5 +53,17 @@ export const setGame = (game: number) => {
 export const toggleBeginCurrentGame = () => {
   return {
     type: TOGGLE_BEGIN_CURRENT_GAME
+  };
+};
+
+export const restoreGame = (game: {
+  currentGame: number;
+  gameData: Array<IScoresAll>;
+}) => {
+  return {
+    type: RESTORE_GAME,
+    payload: {
+      game
+    }
   };
 };

@@ -19,14 +19,16 @@ import {
   initializeData,
   updateData,
   setGame,
-  toggleBeginCurrentGame
+  toggleBeginCurrentGame,
+  restoreGame
 } from "./store/game/action";
 import {
   addNewPlayer,
   updateCurrentGameScore,
   movePlayer,
   moveOncePerPlayer,
-  changePlayer
+  changePlayer,
+  restorePlayers
 } from "./store/player/action";
 import {
   getStartGame,
@@ -85,17 +87,18 @@ interface Selectors {
 }
 
 interface ConnectedDispatch {
+  // Board dispatch
+  changeDimensions: typeof changeDimensions;
+  setBoardScale: typeof setBoardScale;
+  setGridDimension: typeof setGridDimension;
+
   // Game dispatch
   initializeData: typeof initializeData;
   updateData: typeof updateData;
   setGame: typeof setGame;
   startGame: typeof startGame;
   toggleBeginCurrentGame: typeof toggleBeginCurrentGame;
-
-  // Grid dispatch
-  changeDimensions: typeof changeDimensions;
-  setBoardScale: typeof setBoardScale;
-  setGridDimension: typeof setGridDimension;
+  restoreGame: typeof restoreGame;
 
   // Player dispatch
   addNewPlayer: typeof addNewPlayer;
@@ -103,6 +106,7 @@ interface ConnectedDispatch {
   movePlayer: typeof movePlayer;
   moveOncePerPlayer: typeof moveOncePerPlayer;
   changePlayer: typeof changePlayer;
+  restorePlayers: typeof restorePlayers;
 }
 
 type Props = OwnProps & ConnectedDispatch & Selectors;
@@ -141,6 +145,29 @@ class Game extends React.Component<Props, {}> {
 
       // Renew the grid dimension for future resize
       setGridDimension(width);
+    }
+  };
+
+  handleRestoreGame = async () => {
+    const { restoreGame, restorePlayers } = this.props;
+    const fs = await import("fs");
+    const path = await import("path");
+    const dataFolder = await getGameDataFolder();
+    let prevStoredGameData;
+
+    try {
+      prevStoredGameData = fs
+        .readFileSync(path.join(dataFolder, "backup.json"))
+        .toString();
+    } catch (error) {
+      console.error(`Error in reading backup.json: ${error}`);
+    }
+
+    if (prevStoredGameData) {
+      const parsedGameData = JSON.parse(prevStoredGameData);
+      restoreGame(parsedGameData["game"]);
+      restorePlayers(parsedGameData["players"]);
+      console.log("Restored game!");
     }
   };
 
@@ -389,7 +416,11 @@ class Game extends React.Component<Props, {}> {
                       content={"Start Game"}
                       onClick={startGame}
                     />
-                    <Button negative content={"Restore Game"} />
+                    <Button
+                      negative
+                      content={"Restore Game"}
+                      onClick={this.handleRestoreGame}
+                    />
                   </Button.Group>
                 </Segment>
               </Segment.Group>
@@ -443,12 +474,14 @@ export default connect(
     updateData,
     setGame,
     toggleBeginCurrentGame,
+    restoreGame,
 
     // players
     addNewPlayer,
     updateCurrentGameScore,
     movePlayer,
     moveOncePerPlayer,
-    changePlayer
+    changePlayer,
+    restorePlayers
   }
 )(Game);

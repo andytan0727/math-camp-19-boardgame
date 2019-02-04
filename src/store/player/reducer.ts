@@ -4,7 +4,8 @@ import {
   MOVE_PLAYER,
   CHANGE_PLAYER,
   UPDATE_CURRENT_GAME_SCORE,
-  MOVE_ONCE_PER_PLAYER
+  MOVE_ONCE_PER_PLAYER,
+  RESTORE_PLAYERS
 } from "../../utils/constants/actionTypes";
 import {
   getRandomColor,
@@ -137,6 +138,11 @@ export const players = produce((draft, action: PlayerActions) => {
         };
       }
 
+      return draft;
+
+    case RESTORE_PLAYERS:
+      draft.current = action.payload.players.current;
+      draft.all = action.payload.players.all;
       return draft;
 
     default:

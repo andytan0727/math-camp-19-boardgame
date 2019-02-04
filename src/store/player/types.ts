@@ -3,7 +3,8 @@ import {
   MOVE_PLAYER,
   MOVE_ONCE_PER_PLAYER,
   CHANGE_PLAYER,
-  UPDATE_CURRENT_GAME_SCORE
+  UPDATE_CURRENT_GAME_SCORE,
+  RESTORE_PLAYERS
 } from "../../utils/constants/actionTypes";
 
 /**
@@ -81,8 +82,19 @@ interface UpdateCurrentGameScoreAction {
   };
 }
 
+interface RestorePlayersAction {
+  type: typeof RESTORE_PLAYERS;
+  payload: {
+    players: {
+      current: ISinglePlayerObj;
+      all: Array<ISinglePlayerObj>;
+    };
+  };
+}
+
 export type PlayerActions = AddNewPlayerAction &
   MovePlayerAction &
   MoveOncePerPlayerAction &
   ChangePlayerAction &
-  UpdateCurrentGameScoreAction;
+  UpdateCurrentGameScoreAction &
+  RestorePlayersAction;
