@@ -34,9 +34,10 @@ export default class PlayerDashboard extends React.PureComponent<
                   style={
                     player.id === curPlayerId && beginCurGame
                       ? {
+                          boxSizing: "border-box",
+                          width: "100%",
                           border: `3px solid ${player.color}`,
-                          padding: "10px 20px",
-                          // width: "100%"
+                          padding: "10px 20px"
                         }
                       : {}
                   }
@@ -49,7 +50,7 @@ export default class PlayerDashboard extends React.PureComponent<
                           player.path[player.path.length - 2] &&
                           player.pos - player.path[player.path.length - 2] > 0
                             ? "green"
-                            : player.path.length === 1
+                            : player.path.length === 1 || player.pos === 300
                             ? "black"
                             : "red"
                       }}
@@ -61,7 +62,7 @@ export default class PlayerDashboard extends React.PureComponent<
                           player.path[player.path.length - 2] &&
                           player.pos - player.path[player.path.length - 2] > 0
                             ? "green"
-                            : player.path.length === 1
+                            : player.path.length === 1 || player.pos === 300
                             ? "black"
                             : "red"
                         }
