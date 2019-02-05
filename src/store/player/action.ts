@@ -4,9 +4,10 @@ import {
   MOVE_PLAYER,
   MOVE_ONCE_PER_PLAYER,
   CHANGE_PLAYER,
-  UPDATE_CURRENT_GAME_SCORE
+  UPDATE_CURRENT_GAME_SCORE,
+  RESTORE_PLAYERS
 } from "../../utils/constants/actionTypes";
-import { IScoresAll } from "./types";
+import { IScoresAll, ISinglePlayerObj } from "./types";
 
 // Actions
 export const addNewPlayer = () => {
@@ -49,6 +50,18 @@ export const updateCurrentGameScore = (
     payload: {
       curGame,
       data
+    }
+  };
+};
+
+export const restorePlayers = (players: {
+  current: ISinglePlayerObj;
+  all: Array<ISinglePlayerObj>;
+}) => {
+  return {
+    type: RESTORE_PLAYERS,
+    payload: {
+      players
     }
   };
 };

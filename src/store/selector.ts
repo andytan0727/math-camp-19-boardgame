@@ -77,6 +77,11 @@ export const getBeginCurrentGame = createSelector(
   game => game
 );
 
+export const getGameData = createDeepEqualSelector(
+  gameData,
+  gameData => gameData
+);
+
 export const getCurrentGamePreviousData = createDeepEqualSelector(
   [currentGame, gameData],
   (curGame, data) => data[curGame - 1]

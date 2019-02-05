@@ -13,6 +13,7 @@
     "@craco/craco": "^3.4.0",
     "chokidar": "^2.0.4",
     "cuid": "^2.1.4",
+    "deep-freeze": "^0.0.1",
     "dotenv": "^6.2.0",
     "electron-is-dev": "^1.0.1",
     "immer": "^1.12.1",

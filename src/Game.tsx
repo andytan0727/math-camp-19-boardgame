@@ -2,11 +2,12 @@ import React from "react";
 import { connect } from "react-redux";
 import { Stage } from "react-konva";
 import { Grid, Header, Segment, Button } from "semantic-ui-react";
-import _ from "lodash";
+import { isEqual, debounce } from "lodash";
 import {
   isElectron,
   getGameDataFolder,
-  readJSONData
+  readJSONData,
+  writeJSONData
 } from "./utils/helpers/electronHelpers";
 import {
   changeDimensions,
@@ -18,18 +19,21 @@ import {
   initializeData,
   updateData,
   setGame,
-  toggleBeginCurrentGame
+  toggleBeginCurrentGame,
+  restoreGame
 } from "./store/game/action";
 import {
   addNewPlayer,
   updateCurrentGameScore,
   movePlayer,
   moveOncePerPlayer,
-  changePlayer
+  changePlayer,
+  restorePlayers
 } from "./store/player/action";
 import {
   getStartGame,
   getCurrentGame,
+  getGameData,
   getCurrentGamePreviousData,
   getCurrentPlayerScore,
   getCurrentLayout,
@@ -48,6 +52,7 @@ import CanvasGrid from "./components/canvas/CanvasGrid";
 import CanvasPlayer from "./components/canvas/CanvasPlayer";
 import CanvasScore from "./components/canvas/CanvasScore";
 import PlayerDashboard from "./components/panel/PlayerDashboard";
+import RestoreGameModal from "./components/panel/RestoreGameModal";
 
 // CSS Styles
 import styles from "./styles/Game.module.css";
@@ -72,6 +77,7 @@ interface Selectors {
   curGame: number;
   beginCurGame: boolean;
   curGamePrevData: IScoresAll;
+  gameData: Array<IScoresAll>;
 
   // Player
   count: number;
@@ -82,17 +88,18 @@ interface Selectors {
 }
 
 interface ConnectedDispatch {
+  // Board dispatch
+  changeDimensions: typeof changeDimensions;
+  setBoardScale: typeof setBoardScale;
+  setGridDimension: typeof setGridDimension;
+
   // Game dispatch
   initializeData: typeof initializeData;
   updateData: typeof updateData;
   setGame: typeof setGame;
   startGame: typeof startGame;
   toggleBeginCurrentGame: typeof toggleBeginCurrentGame;
-
-  // Grid dispatch
-  changeDimensions: typeof changeDimensions;
-  setBoardScale: typeof setBoardScale;
-  setGridDimension: typeof setGridDimension;
+  restoreGame: typeof restoreGame;
 
   // Player dispatch
   addNewPlayer: typeof addNewPlayer;
@@ -100,6 +107,7 @@ interface ConnectedDispatch {
   movePlayer: typeof movePlayer;
   moveOncePerPlayer: typeof moveOncePerPlayer;
   changePlayer: typeof changePlayer;
+  restorePlayers: typeof restorePlayers;
 }
 
 type Props = OwnProps & ConnectedDispatch & Selectors;
@@ -109,11 +117,15 @@ let gameDataFolder: string;
 // let timeout: any;
 
 // Main component
-class Game extends React.Component<Props, {}> {
+class Game extends React.Component<Props, { openModal: boolean }> {
   private mainBoard: React.RefObject<HTMLDivElement>;
 
   constructor(props: Props) {
     super(props);
+    this.state = {
+      // Restore game modal
+      openModal: false
+    };
     this.mainBoard = React.createRef();
   }
 
@@ -138,6 +150,35 @@ class Game extends React.Component<Props, {}> {
 
       // Renew the grid dimension for future resize
       setGridDimension(width);
+    }
+  };
+
+  toggleModalOpenClose = () => {
+    this.setState(prevState => ({
+      openModal: !prevState.openModal
+    }));
+  };
+
+  handleRestoreGame = async () => {
+    const { restoreGame, restorePlayers } = this.props;
+    const fs = await import("fs");
+    const path = await import("path");
+    const dataFolder = await getGameDataFolder();
+    let prevStoredGameData;
+
+    try {
+      prevStoredGameData = fs
+        .readFileSync(path.join(dataFolder, "backup.json"))
+        .toString();
+    } catch (error) {
+      console.error(`Error in reading backup.json: ${error}`);
+    }
+
+    if (prevStoredGameData) {
+      const parsedGameData = JSON.parse(prevStoredGameData);
+      restoreGame(parsedGameData["game"]);
+      restorePlayers(parsedGameData["players"]);
+      console.log("Restored game!");
     }
   };
 
@@ -192,11 +233,11 @@ class Game extends React.Component<Props, {}> {
       toggleBeginCurrentGame
     } = this.props;
 
-    const scoreType: string | undefined = _.isEqual(
+    const scoreType: string | undefined = isEqual(
       curGamePrevData.score,
       data[curGame - 1].score
     )
-      ? _.isEqual(curGamePrevData.extra, data[curGame - 1].extra)
+      ? isEqual(curGamePrevData.extra, data[curGame - 1].extra)
         ? undefined
         : "extra"
       : "score";
@@ -221,6 +262,18 @@ class Game extends React.Component<Props, {}> {
             // End game and update data
             toggleBeginCurrentGame();
             updateData(data);
+
+            // Write file to be restored if unexpected bug happens
+            writeJSONData({
+              game: {
+                currentGame: this.props.curGame,
+                gameData: this.props.gameData
+              },
+              players: {
+                current: this.props.currentPlayer,
+                all: this.props.allPlayers
+              }
+            });
           }, 1000);
         }
       }, 2000 * i);
@@ -238,7 +291,7 @@ class Game extends React.Component<Props, {}> {
     this.setBoardDimensions();
 
     // Update dimensions accordingly when resize
-    window.addEventListener("resize", _.debounce(this.handleResize, 500));
+    window.addEventListener("resize", debounce(this.handleResize, 500));
 
     // File change listener
     watchFileListener = isElectron ? this.initializeWatcher() : undefined;
@@ -320,6 +373,8 @@ class Game extends React.Component<Props, {}> {
       box: this.props.box
     };
 
+    const { openModal: open } = this.state;
+
     return (
       <div className={styles.mainGame}>
         <Grid centered columns={2} divided>
@@ -374,8 +429,17 @@ class Game extends React.Component<Props, {}> {
                       content={"Start Game"}
                       onClick={startGame}
                     />
-                    <Button negative content={"Reset Game"} />
+                    <Button
+                      negative
+                      content={"Restore Game"}
+                      onClick={this.toggleModalOpenClose}
+                    />
                   </Button.Group>
+                  <RestoreGameModal
+                    open={open}
+                    handleClose={this.toggleModalOpenClose}
+                    handleRestore={this.handleRestoreGame}
+                  />
                 </Segment>
               </Segment.Group>
             </div>
@@ -399,6 +463,7 @@ const mapStateToProps = (state: AppState) => {
     curGame: getCurrentGame(state),
     beginCurGame: getBeginCurrentGame(state),
     curGamePrevData: getCurrentGamePreviousData(state),
+    gameData: getGameData(state),
 
     // Players
     count: getCount(state),
@@ -427,12 +492,14 @@ export default connect(
     updateData,
     setGame,
     toggleBeginCurrentGame,
+    restoreGame,
 
     // players
     addNewPlayer,
     updateCurrentGameScore,
     movePlayer,
     moveOncePerPlayer,
-    changePlayer
+    changePlayer,
+    restorePlayers
   }
 )(Game);

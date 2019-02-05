@@ -6,7 +6,8 @@ import {
   UPDATE_DATA,
   NEXT_GAME,
   SET_GAME,
-  TOGGLE_BEGIN_CURRENT_GAME
+  TOGGLE_BEGIN_CURRENT_GAME,
+  RESTORE_GAME
 } from "../../utils/constants/actionTypes";
 
 // Interfaces
@@ -43,6 +44,11 @@ export const game = produce((draft, action: GameAction) => {
 
     case TOGGLE_BEGIN_CURRENT_GAME:
       draft.beginCurrentGame = !draft.beginCurrentGame;
+      return draft;
+
+    case RESTORE_GAME:
+      draft.currentGame = action.payload.game.currentGame;
+      draft.gameData = action.payload.game.gameData;
       return draft;
 
     default:

@@ -29,3 +29,19 @@ export const readJSONData = async (filePath: string) => {
   }
   return undefined;
 };
+
+export const writeJSONData = async (data: any) => {
+  console.log(`Writing to backup.json...`);
+  const fs = await import("fs");
+  const path = await import("path");
+  const dataFolder = await getGameDataFolder();
+  try {
+    fs.writeFileSync(
+      path.join(dataFolder, "backup.json"),
+      JSON.stringify(data)
+    );
+    console.log("File was writen.");
+  } catch (error) {
+    console.error(`Error in writing file: ${error}`);
+  }
+};
