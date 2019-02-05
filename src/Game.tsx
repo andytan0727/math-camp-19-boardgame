@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Stage } from "react-konva";
 import { Grid, Header, Segment, Button } from "semantic-ui-react";
-import _ from "lodash";
+import { isEqual, debounce } from "lodash";
 import {
   isElectron,
   getGameDataFolder,
@@ -233,11 +233,11 @@ class Game extends React.Component<Props, { openModal: boolean }> {
       toggleBeginCurrentGame
     } = this.props;
 
-    const scoreType: string | undefined = _.isEqual(
+    const scoreType: string | undefined = isEqual(
       curGamePrevData.score,
       data[curGame - 1].score
     )
-      ? _.isEqual(curGamePrevData.extra, data[curGame - 1].extra)
+      ? isEqual(curGamePrevData.extra, data[curGame - 1].extra)
         ? undefined
         : "extra"
       : "score";
@@ -291,7 +291,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     this.setBoardDimensions();
 
     // Update dimensions accordingly when resize
-    window.addEventListener("resize", _.debounce(this.handleResize, 500));
+    window.addEventListener("resize", debounce(this.handleResize, 500));
 
     // File change listener
     watchFileListener = isElectron ? this.initializeWatcher() : undefined;
