@@ -14,11 +14,21 @@ import { IScoresAll } from "../player/types";
  * Game states
  */
 
+interface IPos {
+  id: number;
+  pos: number;
+}
+
+export interface IBonusPos {
+  [key: string]: Array<IPos>;
+}
+
 export interface IGameState {
   startGame: boolean;
   currentGame: number;
   beginCurrentGame: boolean;
   gameData: Array<IScoresAll>;
+  bonusPos: IBonusPos;
 }
 
 /**
