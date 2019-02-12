@@ -26,6 +26,7 @@ const startGame = (state: AppState) => state.game.startGame;
 const currentGame = (state: AppState) => state.game.currentGame;
 const gameData = (state: AppState) => state.game.gameData;
 const beginCurrentGame = (state: AppState) => state.game.beginCurrentGame;
+const bonusPos = (state: AppState) => state.game.bonusPos;
 
 // From players states
 const count = (state: AppState) => state.players.count;
@@ -85,6 +86,11 @@ export const getGameData = createDeepEqualSelector(
 export const getCurrentGamePreviousData = createDeepEqualSelector(
   [currentGame, gameData],
   (curGame, data) => data[curGame - 1]
+);
+
+export const getBonusPos = createSelector(
+  bonusPos,
+  pos => pos
 );
 
 export const getCount = createSelector(

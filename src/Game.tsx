@@ -34,6 +34,7 @@ import {
   getStartGame,
   getCurrentGame,
   getGameData,
+  getBonusPos,
   getCurrentGamePreviousData,
   getCurrentPlayerScore,
   getCurrentLayout,
@@ -62,6 +63,7 @@ import { ISinglePlayerObj, IScoresAll } from "./store/player/types";
 import { AppState } from "./store";
 import { FSWatcher } from "chokidar";
 import { ILayout, IGridDim, ITileDim } from "./store/board/types";
+import { IBonusPos } from "./store/game/types";
 
 interface OwnProps {}
 
@@ -78,6 +80,7 @@ interface Selectors {
   beginCurGame: boolean;
   curGamePrevData: IScoresAll;
   gameData: Array<IScoresAll>;
+  bonusPos: IBonusPos;
 
   // Player
   count: number;
@@ -359,7 +362,11 @@ class Game extends React.Component<Props, { openModal: boolean }> {
       startGame,
 
       // Selector state
+      layout,
+      grid,
+      box,
       boardScale,
+      bonusPos,
       allPlayers,
       currentPlayer,
       beginCurGame
@@ -368,9 +375,9 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     // Selectors
     const { width, height } = this.props.grid;
     const board = {
-      layout: this.props.layout,
-      grid: this.props.grid,
-      box: this.props.box
+      layout,
+      grid,
+      box
     };
 
     const { openModal: open } = this.state;
@@ -398,7 +405,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                       beginCurGame={beginCurGame}
                     />
                   ))}
-                  <CanvasScore />
+                  <CanvasScore layout={layout} pos={bonusPos} />
                 </Stage>
               )}
             </div>
@@ -464,6 +471,7 @@ const mapStateToProps = (state: AppState) => {
     beginCurGame: getBeginCurrentGame(state),
     curGamePrevData: getCurrentGamePreviousData(state),
     gameData: getGameData(state),
+    bonusPos: getBonusPos(state),
 
     // Players
     count: getCount(state),

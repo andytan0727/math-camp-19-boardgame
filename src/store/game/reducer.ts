@@ -17,7 +17,37 @@ const initialState: IGameState = {
   startGame: true,
   currentGame: 1,
   beginCurrentGame: false,
-  gameData: []
+  gameData: [],
+  bonusPos: {
+    x2: [
+      {
+        id: 1,
+        pos: 20
+      },
+      {
+        id: 2,
+        pos: 40
+      },
+      {
+        id: 3,
+        pos: 66
+      }
+    ],
+    x4: [
+      {
+        id: 1,
+        pos: 30
+      },
+      {
+        id: 2,
+        pos: 50
+      },
+      {
+        id: 3,
+        pos: 85
+      }
+    ]
+  }
 };
 
 export const game = produce((draft, action: GameAction) => {
