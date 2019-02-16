@@ -15,6 +15,19 @@ export const colorPalette = [
   "brown"
 ];
 
+export const playerName = [
+  "水星",
+  "金星",
+  "地球",
+  "火星",
+  "木星",
+  "土星",
+  "天王星",
+  "海王星",
+  "太阳",
+  "月球"
+];
+
 interface grid {
   layout: ILayout;
   box: ITileDim;
@@ -27,8 +40,16 @@ export const getRandomColor = () => {
   return undefined;
 };
 
+export const getPlayerName = () => {
+  if (playerName.length) {
+    return playerName.shift();
+  }
+  return undefined;
+};
+
 export const generatePlayer = (curPlayerId: number): ISinglePlayerObj => ({
   id: curPlayerId + 1,
+  name: getPlayerName()!,
   color: getRandomColor()!,
   pos: 1,
   path: [1],

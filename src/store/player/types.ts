@@ -12,6 +12,7 @@ import {
  */
 export interface ISinglePlayerObj {
   id: number;
+  name: string;
   pos: number;
   color: string;
   game: Array<IScores>;

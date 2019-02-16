@@ -8,6 +8,7 @@ import {
   RESTORE_PLAYERS
 } from "../../utils/constants/actionTypes";
 import {
+  getPlayerName,
   getRandomColor,
   generatePlayer,
   getNextPlayer
@@ -17,12 +18,14 @@ import {
 import { IPlayers, PlayerActions } from "./types";
 
 const firstPlayerColor = getRandomColor()!;
+const firstPlayerName = getPlayerName()!;
 const firstPlayerId = 1;
 
 const initialState: IPlayers = {
   count: 10,
   current: {
     id: firstPlayerId,
+    name: firstPlayerName,
     pos: 1,
     color: firstPlayerColor,
     game: [],
@@ -30,6 +33,7 @@ const initialState: IPlayers = {
   },
   all: Array.from({ length: 10 }, (el, idx) => idx + 1).map(val => ({
     id: val,
+    name: val === 1 ? firstPlayerName : getPlayerName()!,
     pos: 1,
     color: val === 1 ? firstPlayerColor : getRandomColor()!,
     game: [],
