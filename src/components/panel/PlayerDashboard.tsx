@@ -99,7 +99,7 @@ export default class PlayerDashboard extends React.PureComponent<
                     verticalAlign="middle"
                   />
                   <List.Content>
-                    <List.Header>{`Player ${player.id}`}</List.Header>
+                    <List.Header>{`${player.name}`}</List.Header>
                     <List.Description>{"Current Position:"}</List.Description>
                   </List.Content>
                 </List.Item>
