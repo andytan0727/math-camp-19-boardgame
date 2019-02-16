@@ -4,6 +4,7 @@ import { Stage } from "react-konva";
 import { Grid, Header, Segment, Button } from "semantic-ui-react";
 import { isEqual, debounce } from "lodash";
 import {
+  initializeWatcher,
   isElectron,
   getGameDataFolder,
   readJSONData,
@@ -116,8 +117,6 @@ interface ConnectedDispatch {
 type Props = OwnProps & ConnectedDispatch & Selectors;
 
 let watchFileListener: Promise<FSWatcher> | undefined;
-let gameDataFolder: string;
-// let timeout: any;
 
 // Main component
 class Game extends React.Component<Props, { openModal: boolean }> {
@@ -183,16 +182,6 @@ class Game extends React.Component<Props, { openModal: boolean }> {
       restorePlayers(parsedGameData["players"]);
       console.log("Restored game!");
     }
-  };
-
-  initializeWatcher = async () => {
-    const chokidar = await import("chokidar");
-    gameDataFolder = await getGameDataFolder();
-    const watcher = chokidar.watch(gameDataFolder, {
-      ignored: /[\/\\]\./,
-      persistent: true
-    });
-    return watcher;
   };
 
   // Per player
@@ -297,7 +286,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     window.addEventListener("resize", debounce(this.handleResize, 500));
 
     // File change listener
-    watchFileListener = isElectron ? this.initializeWatcher() : undefined;
+    watchFileListener = isElectron ? initializeWatcher() : undefined;
 
     if (watchFileListener) {
       watchFileListener
@@ -314,28 +303,33 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                 initializeData(gameDataJson["gameScores"]);
               }
             })
-            .on("change", async path => {
-              let rawGameData;
-              try {
-                rawGameData = await readJSONData(path);
-              } catch (error) {
-                console.log(`Error: ${error}`);
-              }
+            .on(
+              "change",
+              debounce(async path => {
+                let rawGameData;
+                try {
+                  rawGameData = await readJSONData(path);
+                } catch (error) {
+                  console.log(`Error: ${error}`);
+                }
 
-              if (rawGameData && this.props.isGameStarted) {
-                const jsonData = JSON.parse(rawGameData);
-                const gameData = jsonData["gameScores"];
-                const curGameNum: number = jsonData["curGame"];
-                console.log("Updating data..");
+                if (rawGameData && this.props.isGameStarted) {
+                  const jsonData = JSON.parse(rawGameData);
+                  const gameData = jsonData["gameScores"];
+                  const curGameNum: number = jsonData["curGame"];
+                  console.log("Updating data..");
 
-                // Dispatch actions
-                setGame(curGameNum);
+                  // Dispatch actions
+                  setGame(curGameNum);
 
-                // Perform game play and then update previous game data
-                this.handleGamePlay(gameData);
-              }
-            })
-            .on("unlink", path => console.log(`File ${path} has been deleted`));
+                  // Perform game play and then update previous game data
+                  this.handleGamePlay(gameData);
+                }
+              }, 2000)
+            )
+            .on("unlink", path =>
+              console.log(`File ${path} has been deleted`)
+            );
         })
         .catch(err => console.error(`Error occurred: ${err}`));
     }

@@ -3,6 +3,16 @@ export const isElectron = navigator.userAgent
   .toLowerCase()
   .includes(" electron/");
 
+export const initializeWatcher = async () => {
+  const chokidar = await import("chokidar");
+  const gameDataFolder = await getGameDataFolder();
+  const watcher = chokidar.watch(gameDataFolder, {
+    ignored: /[\/\\]\./,
+    persistent: true
+  });
+  return watcher;
+};
+
 // Get %APPDATA%\{App_Name}\game_data folder of this app
 export const getGameDataFolder = async () => {
   const path = await import("path");
