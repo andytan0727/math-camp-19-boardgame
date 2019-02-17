@@ -2,6 +2,7 @@ import {
   ADD_NEW_PLAYER,
   MOVE_PLAYER,
   MOVE_ONCE_PER_PLAYER,
+  CHECK_BONUS_SCORE,
   CHANGE_PLAYER,
   UPDATE_CURRENT_GAME_SCORE,
   RESTORE_PLAYERS
@@ -70,6 +71,17 @@ interface MoveOncePerPlayerAction {
   };
 }
 
+interface CheckBonusScoreAction {
+  type: typeof CHECK_BONUS_SCORE;
+  payload: {
+    curGame: number;
+    pos: {
+      x2Pos: Array<number>;
+      x4Pos: Array<number>;
+    };
+  };
+}
+
 interface ChangePlayerAction {
   type: typeof CHANGE_PLAYER;
 }
@@ -96,6 +108,7 @@ interface RestorePlayersAction {
 export type PlayerActions = AddNewPlayerAction &
   MovePlayerAction &
   MoveOncePerPlayerAction &
+  CheckBonusScoreAction &
   ChangePlayerAction &
   UpdateCurrentGameScoreAction &
   RestorePlayersAction;

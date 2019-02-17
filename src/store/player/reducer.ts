@@ -5,6 +5,7 @@ import {
   CHANGE_PLAYER,
   UPDATE_CURRENT_GAME_SCORE,
   MOVE_ONCE_PER_PLAYER,
+  CHECK_BONUS_SCORE,
   RESTORE_PLAYERS
 } from "../../utils/constants/actionTypes";
 import {
@@ -43,13 +44,14 @@ const initialState: IPlayers = {
 
 export const players = produce((draft, action: PlayerActions) => {
   switch (action.type) {
-    case ADD_NEW_PLAYER:
+    case ADD_NEW_PLAYER: {
       const newPlayer = generatePlayer(draft.count);
       draft.all.push(newPlayer);
       draft.count++;
       return draft;
+    }
 
-    case MOVE_PLAYER:
+    case MOVE_PLAYER: {
       draft.all.forEach(player => {
         const newPos =
           player.pos + player.game[action.payload.curGame - 1].score;
@@ -80,8 +82,9 @@ export const players = produce((draft, action: PlayerActions) => {
       });
 
       return draft;
+    }
 
-    case MOVE_ONCE_PER_PLAYER:
+    case MOVE_ONCE_PER_PLAYER: {
       const curScore = draft.current.game[action.payload.curGame - 1].score;
       const curExtra = draft.current.game[action.payload.curGame - 1].extra;
       const newPos =
@@ -118,12 +121,31 @@ export const players = produce((draft, action: PlayerActions) => {
       draft.all[draft.current.id - 1] = draft.current;
 
       return draft;
+    }
 
-    case CHANGE_PLAYER:
+    case CHECK_BONUS_SCORE: {
+      const pos = draft.current.pos;
+      const curExtra = draft.current.game[action.payload.curGame - 1].extra;
+      const x2Pos = action.payload.pos.x2Pos;
+      const x4Pos = action.payload.pos.x4Pos;
+      draft.current.pos = x2Pos.includes(pos)
+        ? pos + curExtra * 2
+        : x4Pos.includes(pos)
+        ? pos + curExtra * 4
+        : pos;
+
+      // Update all players array with new position
+      draft.all[draft.current.id - 1] = draft.current;
+
+      return draft;
+    }
+
+    case CHANGE_PLAYER: {
       draft.current = getNextPlayer(draft);
       return draft;
+    }
 
-    case UPDATE_CURRENT_GAME_SCORE:
+    case UPDATE_CURRENT_GAME_SCORE: {
       const curGame = action.payload.curGame;
       const { score, extra } = action.payload.data[curGame - 1];
       const len = draft.all.length;
@@ -143,11 +165,13 @@ export const players = produce((draft, action: PlayerActions) => {
       }
 
       return draft;
+    }
 
-    case RESTORE_PLAYERS:
+    case RESTORE_PLAYERS: {
       draft.current = action.payload.players.current;
       draft.all = action.payload.players.all;
       return draft;
+    }
 
     default:
       return draft;

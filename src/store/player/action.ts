@@ -3,6 +3,7 @@ import {
   ADD_NEW_PLAYER,
   MOVE_PLAYER,
   MOVE_ONCE_PER_PLAYER,
+  CHECK_BONUS_SCORE,
   CHANGE_PLAYER,
   UPDATE_CURRENT_GAME_SCORE,
   RESTORE_PLAYERS
@@ -31,6 +32,23 @@ export const moveOncePerPlayer = (curGame: number, scoreType: string) => {
     payload: {
       curGame,
       scoreType
+    }
+  };
+};
+
+export const checkBonusScore = (
+  curGame: number,
+  x2Pos: Array<number>,
+  x4Pos: Array<number>
+) => {
+  return {
+    type: CHECK_BONUS_SCORE,
+    payload: {
+      curGame,
+      pos: {
+        x2Pos,
+        x4Pos
+      }
     }
   };
 };
