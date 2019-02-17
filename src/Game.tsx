@@ -140,7 +140,6 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     if (node) {
       const width = node.offsetWidth;
       changeDimensions(width);
-      node.scrollIntoView(false);
     }
   };
 
@@ -158,7 +157,6 @@ class Game extends React.Component<Props, { openModal: boolean }> {
   };
 
   scrollToPlayer = () => {
-    // Scroll to focus on current player
     const y = this.props.layout[this.props.curPlayerPos.toString()].y;
 
     if (y > 140) {
@@ -216,6 +214,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
       changePlayer
     } = this.props;
 
+    // Move player according to score/extra
     moveOncePerPlayer(this.props.curGame, scoreType);
     this.scrollToPlayer();
 
@@ -298,6 +297,9 @@ class Game extends React.Component<Props, { openModal: boolean }> {
 
     // Initialize board size and coordinates when mounted
     this.setBoardDimensions();
+
+    // Scroll to first player (bottom)
+    setTimeout(this.scrollToPlayer, 1000);
 
     // Update dimensions accordingly when resize
     window.addEventListener("resize", debounce(this.handleResize, 500));
