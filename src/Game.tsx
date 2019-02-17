@@ -299,7 +299,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     this.setBoardDimensions();
 
     // Scroll to first player (bottom)
-    setTimeout(this.scrollToPlayer, 1000);
+    setTimeout(this.scrollToPlayer, 2000);
 
     // Update dimensions accordingly when resize
     window.addEventListener("resize", debounce(this.handleResize, 500));
