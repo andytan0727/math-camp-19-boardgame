@@ -28,6 +28,7 @@ import {
   updateCurrentGameScore,
   movePlayer,
   moveOncePerPlayer,
+  checkBonusScore,
   changePlayer,
   restorePlayers
 } from "./store/player/action";
@@ -110,6 +111,7 @@ interface ConnectedDispatch {
   updateCurrentGameScore: typeof updateCurrentGameScore;
   movePlayer: typeof movePlayer;
   moveOncePerPlayer: typeof moveOncePerPlayer;
+  checkBonusScore: typeof checkBonusScore;
   changePlayer: typeof changePlayer;
   restorePlayers: typeof restorePlayers;
 }
@@ -155,6 +157,23 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     }
   };
 
+  scrollToPlayer = () => {
+    // Scroll to focus on current player
+    const y = this.props.layout[this.props.curPlayerPos.toString()].y;
+
+    if (y > 140) {
+      window.scrollTo({
+        top: y - 110,
+        behavior: "smooth"
+      });
+    } else {
+      window.scrollTo({
+        top: y - 30,
+        behavior: "smooth"
+      });
+    }
+  };
+
   toggleModalOpenClose = () => {
     this.setState(prevState => ({
       openModal: !prevState.openModal
@@ -185,30 +204,24 @@ class Game extends React.Component<Props, { openModal: boolean }> {
   };
 
   // Per player
-  mainGameLogic = (scoreType: string) => {
+  mainGameLogic = (
+    scoreType: string,
+    { x2Pos, x4Pos }: { x2Pos: Array<number>; x4Pos: Array<number> }
+  ) => {
     const {
-      layout,
+      // layout,
+      curGame,
       moveOncePerPlayer,
+      checkBonusScore,
       changePlayer
-      // currentPlayer
     } = this.props;
 
     moveOncePerPlayer(this.props.curGame, scoreType);
+    this.scrollToPlayer();
 
-    // Scroll to focus on current player
-    const y = layout[this.props.curPlayerPos.toString()].y;
-
-    if (y > 140) {
-      window.scrollTo({
-        top: y - 110,
-        behavior: "smooth"
-      });
-    } else {
-      window.scrollTo({
-        top: y - 30,
-        behavior: "smooth"
-      });
-    }
+    // Check Bonus
+    checkBonusScore(curGame, x2Pos, x4Pos);
+    this.scrollToPlayer();
 
     changePlayer();
   };
@@ -220,6 +233,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
       updateCurrentGameScore,
       curGamePrevData,
       curGame,
+      bonusPos,
 
       // Action
       toggleBeginCurrentGame
@@ -240,6 +254,9 @@ class Game extends React.Component<Props, { openModal: boolean }> {
       return;
     }
 
+    const x2Pos = bonusPos.x2.map(val => val.pos);
+    const x4Pos = bonusPos.x4.map(val => val.pos);
+
     updateCurrentGameScore(curGame, data);
 
     // Begin game
@@ -247,7 +264,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
 
     for (let i = 0; i < 10; i++) {
       setTimeout(() => {
-        this.mainGameLogic(scoreType!);
+        this.mainGameLogic(scoreType!, { x2Pos, x4Pos });
 
         if (i === 9) {
           setTimeout(() => {
@@ -327,9 +344,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                 }
               }, 2000)
             )
-            .on("unlink", path =>
-              console.log(`File ${path} has been deleted`)
-            );
+            .on("unlink", path => console.log(`File ${path} has been deleted`));
         })
         .catch(err => console.error(`Error occurred: ${err}`));
     }
@@ -389,6 +404,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                   scaleY={boardScale}
                 >
                   <CanvasGrid grid={board} />
+                  <CanvasScore layout={layout} pos={bonusPos} />
                   {allPlayers.map((person: ISinglePlayerObj) => (
                     <CanvasPlayer
                       key={`player_${person.id}`}
@@ -399,7 +415,6 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                       beginCurGame={beginCurGame}
                     />
                   ))}
-                  <CanvasScore layout={layout} pos={bonusPos} />
                 </Stage>
               )}
             </div>
@@ -501,6 +516,7 @@ export default connect(
     updateCurrentGameScore,
     movePlayer,
     moveOncePerPlayer,
+    checkBonusScore,
     changePlayer,
     restorePlayers
   }
