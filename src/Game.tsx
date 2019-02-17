@@ -344,7 +344,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                   // Perform game play and then update previous game data
                   this.handleGamePlay(gameData);
                 }
-              }, 2000)
+              }, 1500)
             )
             .on("unlink", path => console.log(`File ${path} has been deleted`));
         })
