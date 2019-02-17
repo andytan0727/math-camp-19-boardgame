@@ -4,6 +4,7 @@ import { Stage } from "react-konva";
 import { Grid, Header, Segment, Button } from "semantic-ui-react";
 import { isEqual, debounce } from "lodash";
 import {
+  initializeWatcher,
   isElectron,
   getGameDataFolder,
   readJSONData,
@@ -27,6 +28,7 @@ import {
   updateCurrentGameScore,
   movePlayer,
   moveOncePerPlayer,
+  checkBonusScore,
   changePlayer,
   restorePlayers
 } from "./store/player/action";
@@ -109,6 +111,7 @@ interface ConnectedDispatch {
   updateCurrentGameScore: typeof updateCurrentGameScore;
   movePlayer: typeof movePlayer;
   moveOncePerPlayer: typeof moveOncePerPlayer;
+  checkBonusScore: typeof checkBonusScore;
   changePlayer: typeof changePlayer;
   restorePlayers: typeof restorePlayers;
 }
@@ -116,8 +119,6 @@ interface ConnectedDispatch {
 type Props = OwnProps & ConnectedDispatch & Selectors;
 
 let watchFileListener: Promise<FSWatcher> | undefined;
-let gameDataFolder: string;
-// let timeout: any;
 
 // Main component
 class Game extends React.Component<Props, { openModal: boolean }> {
@@ -139,7 +140,6 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     if (node) {
       const width = node.offsetWidth;
       changeDimensions(width);
-      node.scrollIntoView(false);
     }
   };
 
@@ -153,6 +153,22 @@ class Game extends React.Component<Props, { openModal: boolean }> {
 
       // Renew the grid dimension for future resize
       setGridDimension(width);
+    }
+  };
+
+  scrollToPlayer = () => {
+    const y = this.props.layout[this.props.curPlayerPos.toString()].y;
+
+    if (y > 140) {
+      window.scrollTo({
+        top: y - 110,
+        behavior: "smooth"
+      });
+    } else {
+      window.scrollTo({
+        top: y - 30,
+        behavior: "smooth"
+      });
     }
   };
 
@@ -185,41 +201,26 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     }
   };
 
-  initializeWatcher = async () => {
-    const chokidar = await import("chokidar");
-    gameDataFolder = await getGameDataFolder();
-    const watcher = chokidar.watch(gameDataFolder, {
-      ignored: /[\/\\]\./,
-      persistent: true
-    });
-    return watcher;
-  };
-
   // Per player
-  mainGameLogic = (scoreType: string) => {
+  mainGameLogic = (
+    scoreType: string,
+    { x2Pos, x4Pos }: { x2Pos: Array<number>; x4Pos: Array<number> }
+  ) => {
     const {
-      layout,
+      // layout,
+      curGame,
       moveOncePerPlayer,
+      checkBonusScore,
       changePlayer
-      // currentPlayer
     } = this.props;
 
+    // Move player according to score/extra
     moveOncePerPlayer(this.props.curGame, scoreType);
+    this.scrollToPlayer();
 
-    // Scroll to focus on current player
-    const y = layout[this.props.curPlayerPos.toString()].y;
-
-    if (y > 140) {
-      window.scrollTo({
-        top: y - 110,
-        behavior: "smooth"
-      });
-    } else {
-      window.scrollTo({
-        top: y - 30,
-        behavior: "smooth"
-      });
-    }
+    // Check Bonus
+    checkBonusScore(curGame, x2Pos, x4Pos);
+    this.scrollToPlayer();
 
     changePlayer();
   };
@@ -231,6 +232,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
       updateCurrentGameScore,
       curGamePrevData,
       curGame,
+      bonusPos,
 
       // Action
       toggleBeginCurrentGame
@@ -251,6 +253,9 @@ class Game extends React.Component<Props, { openModal: boolean }> {
       return;
     }
 
+    const x2Pos = bonusPos.x2.map(val => val.pos);
+    const x4Pos = bonusPos.x4.map(val => val.pos);
+
     updateCurrentGameScore(curGame, data);
 
     // Begin game
@@ -258,7 +263,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
 
     for (let i = 0; i < 10; i++) {
       setTimeout(() => {
-        this.mainGameLogic(scoreType!);
+        this.mainGameLogic(scoreType!, { x2Pos, x4Pos });
 
         if (i === 9) {
           setTimeout(() => {
@@ -293,11 +298,14 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     // Initialize board size and coordinates when mounted
     this.setBoardDimensions();
 
+    // Scroll to first player (bottom)
+    setTimeout(this.scrollToPlayer, 1000);
+
     // Update dimensions accordingly when resize
     window.addEventListener("resize", debounce(this.handleResize, 500));
 
     // File change listener
-    watchFileListener = isElectron ? this.initializeWatcher() : undefined;
+    watchFileListener = isElectron ? initializeWatcher() : undefined;
 
     if (watchFileListener) {
       watchFileListener
@@ -314,27 +322,30 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                 initializeData(gameDataJson["gameScores"]);
               }
             })
-            .on("change", async path => {
-              let rawGameData;
-              try {
-                rawGameData = await readJSONData(path);
-              } catch (error) {
-                console.log(`Error: ${error}`);
-              }
+            .on(
+              "change",
+              debounce(async path => {
+                let rawGameData;
+                try {
+                  rawGameData = await readJSONData(path);
+                } catch (error) {
+                  console.log(`Error: ${error}`);
+                }
 
-              if (rawGameData && this.props.isGameStarted) {
-                const jsonData = JSON.parse(rawGameData);
-                const gameData = jsonData["gameScores"];
-                const curGameNum: number = jsonData["curGame"];
-                console.log("Updating data..");
+                if (rawGameData && this.props.isGameStarted) {
+                  const jsonData = JSON.parse(rawGameData);
+                  const gameData = jsonData["gameScores"];
+                  const curGameNum: number = jsonData["curGame"];
+                  console.log("Updating data..");
 
-                // Dispatch actions
-                setGame(curGameNum);
+                  // Dispatch actions
+                  setGame(curGameNum);
 
-                // Perform game play and then update previous game data
-                this.handleGamePlay(gameData);
-              }
-            })
+                  // Perform game play and then update previous game data
+                  this.handleGamePlay(gameData);
+                }
+              }, 1500)
+            )
             .on("unlink", path => console.log(`File ${path} has been deleted`));
         })
         .catch(err => console.error(`Error occurred: ${err}`));
@@ -395,6 +406,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                   scaleY={boardScale}
                 >
                   <CanvasGrid grid={board} />
+                  <CanvasScore layout={layout} pos={bonusPos} />
                   {allPlayers.map((person: ISinglePlayerObj) => (
                     <CanvasPlayer
                       key={`player_${person.id}`}
@@ -405,7 +417,6 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                       beginCurGame={beginCurGame}
                     />
                   ))}
-                  <CanvasScore layout={layout} pos={bonusPos} />
                 </Stage>
               )}
             </div>
@@ -507,6 +518,7 @@ export default connect(
     updateCurrentGameScore,
     movePlayer,
     moveOncePerPlayer,
+    checkBonusScore,
     changePlayer,
     restorePlayers
   }

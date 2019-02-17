@@ -50,9 +50,11 @@ export default class PlayerDashboard extends React.PureComponent<
                           player.path[player.path.length - 2] &&
                           player.pos - player.path[player.path.length - 2] > 0
                             ? "green"
-                            : player.path.length === 1 || player.pos === 300
-                            ? "black"
-                            : "red"
+                            : player.path[player.path.length - 2] &&
+                              player.pos - player.path[player.path.length - 2] <
+                                0
+                            ? "red"
+                            : "black"
                       }}
                     >
                       {player.path[player.path.length - 2] || 1}{" "}
@@ -62,9 +64,11 @@ export default class PlayerDashboard extends React.PureComponent<
                           player.path[player.path.length - 2] &&
                           player.pos - player.path[player.path.length - 2] > 0
                             ? "green"
-                            : player.path.length === 1 || player.pos === 300
-                            ? "black"
-                            : "red"
+                            : player.path[player.path.length - 2] &&
+                              player.pos - player.path[player.path.length - 2] <
+                                0
+                            ? "red"
+                            : "black"
                         }
                         size={"large"}
                         verticalAlign={"middle"}
@@ -95,7 +99,7 @@ export default class PlayerDashboard extends React.PureComponent<
                     verticalAlign="middle"
                   />
                   <List.Content>
-                    <List.Header>{`Player ${player.id}`}</List.Header>
+                    <List.Header>{`${player.name}`}</List.Header>
                     <List.Description>{"Current Position:"}</List.Description>
                   </List.Content>
                 </List.Item>

@@ -19,14 +19,18 @@ interface ICoordAndWidth {
 
 interface DimensionTextProps extends ICoordAndWidth {
   id: number;
+  text: string;
   color: string;
   isCurrent: boolean;
 }
 interface PlayerToAnimateProps extends ICoordAndWidth {
   id: number;
+  text: string;
   color: string;
   isCurrent: boolean;
-  render: ({ id, width, coord, color }: DimensionTextProps) => React.ReactNode;
+  render: (
+    { id, text, width, coord, color }: DimensionTextProps
+  ) => React.ReactNode;
 }
 
 interface CanvasPlayerProps {
@@ -38,13 +42,14 @@ interface CanvasPlayerProps {
 }
 
 const DimensionText = (props: DimensionTextProps) => {
-  const { id, coord, width, color, isCurrent } = props;
+  const { id, text, coord, width, color, isCurrent } = props;
   let x: number;
   let y: number;
   let fontSize: number;
 
   if (width / 2 > 30) {
-    x = id % 10 !== 0 ? coord.x - 7 : coord.x - 14.5;
+    // x = id % 10 !== 0 ? coord.x - 7 : coord.x - 14.5;
+    x = coord.x - 12;
     y = coord.y - 11;
     fontSize = 23;
   } else {
@@ -58,7 +63,7 @@ const DimensionText = (props: DimensionTextProps) => {
       x={x}
       y={y}
       fill={isCurrent ? color : styles.white}
-      text={id.toString()}
+      text={text}
       fontSize={fontSize}
       fontFamily={"arial"}
       fontStyle={"Bold"}
@@ -68,7 +73,7 @@ const DimensionText = (props: DimensionTextProps) => {
 };
 
 const PlayerToAnimate = (props: PlayerToAnimateProps) => {
-  const { id, coord, width, color, isCurrent, render } = props;
+  const { id, text, coord, width, color, isCurrent, render } = props;
   return (
     <animated.Group>
       <animated.Circle
@@ -80,7 +85,7 @@ const PlayerToAnimate = (props: PlayerToAnimateProps) => {
         strokeWidth={4}
         perfectDrawEnabled={false}
       />
-      {render({ id, width, coord, color, isCurrent })}
+      {render({ id, text, width, coord, color, isCurrent })}
     </animated.Group>
   );
 };
@@ -91,7 +96,7 @@ export default class CanvasPlayer extends React.PureComponent<
 > {
   render() {
     const {
-      player: { id, pos, color },
+      player: { id, name, pos, color },
       current,
       layout,
       box,
@@ -111,13 +116,15 @@ export default class CanvasPlayer extends React.PureComponent<
           {({ x, y }) => (
             <PlayerToAnimate
               id={id}
+              text={name[0]}
               coord={{ x, y }}
               width={width}
               color={color}
               isCurrent={isCurrent}
-              render={({ id, width, coord, color, isCurrent }) => (
+              render={({ id, text, width, coord, color, isCurrent }) => (
                 <DimensionText
                   id={id}
+                  text={text}
                   width={width}
                   coord={coord}
                   color={color}
