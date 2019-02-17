@@ -1,4 +1,3 @@
-// Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu } = require("electron");
 const path = require("path");
 const url = require("url");
@@ -7,7 +6,6 @@ const isDev = require("electron-is-dev");
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-let splashScreen;
 const winParams = {
   width: 1200,
   height: 850,
@@ -31,16 +29,8 @@ function createWindow() {
   mainWindow.loadURL(startUrl);
 
   mainWindow.webContents.on("did-finish-load", () => {
-    setTimeout(() => {
-      mainWindow.show();
-      mainWindow.maximize();
-
-      if (splashScreen) {
-        let loadingScreenBounds = splashScreen.getBounds();
-        mainWindow.setBounds(loadingScreenBounds);
-        splashScreen.close();
-      }
-    }, 3000);
+    mainWindow.show();
+    mainWindow.maximize();
   });
 
   // Open devtools in development environment
@@ -74,37 +64,6 @@ function createWindow() {
     mainWindow = null;
   });
 }
-
-const createLoadingScreen = () => {
-  splashScreen = new BrowserWindow({
-    // width: 1300,
-    width: 1000,
-    height: 500,
-    show: false,
-    parent: mainWindow,
-    transparent: true,
-    frame: false
-  });
-  splashScreen.loadURL(
-    isDev
-      ? url.format({
-          pathname: path.join(__dirname, "/splash.html"),
-          protocol: "file:",
-          slashes: true
-        })
-      : url.format({
-          pathname: path.join(__dirname, "../build/splash.html"),
-          protocol: "file:",
-          slashes: true
-        })
-  );
-
-  splashScreen.on("closed", () => (splashScreen = null));
-  splashScreen.webContents.on("did-finish-load", () => {
-    splashScreen.show();
-    splashScreen.center();
-  });
-};
 
 const generateMenu = () => {
   const template = [
@@ -174,7 +133,6 @@ const generateMenu = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
-  createLoadingScreen();
   createWindow();
   generateMenu();
 });
