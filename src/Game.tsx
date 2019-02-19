@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Stage } from "react-konva";
-import { Grid, Header, Segment, Button } from "semantic-ui-react";
+import { Grid, Header, Segment, Button, Modal } from "semantic-ui-react";
 import { isEqual, debounce } from "lodash";
 import {
   initializeWatcher,
@@ -10,6 +10,7 @@ import {
   readJSONData,
   writeJSONData
 } from "./utils/helpers/electronHelpers";
+import { delay } from "./utils/helpers/gameHelpers";
 import {
   changeDimensions,
   setBoardScale,
@@ -121,14 +122,19 @@ type Props = OwnProps & ConnectedDispatch & Selectors;
 let watchFileListener: Promise<FSWatcher> | undefined;
 
 // Main component
-class Game extends React.Component<Props, { openModal: boolean }> {
+class Game extends React.Component<
+  Props,
+  { openModal: boolean; x2PopUp: boolean; x4PopUp: boolean }
+> {
   private mainBoard: React.RefObject<HTMLDivElement>;
 
   constructor(props: Props) {
     super(props);
     this.state = {
       // Restore game modal
-      openModal: false
+      openModal: false,
+      x2PopUp: false,
+      x4PopUp: false
     };
     this.mainBoard = React.createRef();
   }
@@ -178,6 +184,20 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     }));
   };
 
+  toggleBonusPopUp = (typeOfPopUp: string) => {
+    if (typeOfPopUp.toLowerCase() === "x2") {
+      this.setState(prevState => ({
+        x2PopUp: !prevState.x2PopUp
+      }));
+    }
+
+    if (typeOfPopUp.toLowerCase() === "x4") {
+      this.setState(prevState => ({
+        x4PopUp: !prevState.x4PopUp
+      }));
+    }
+  };
+
   handleRestoreGame = async () => {
     const { restoreGame, restorePlayers } = this.props;
     const fs = await import("fs");
@@ -202,7 +222,7 @@ class Game extends React.Component<Props, { openModal: boolean }> {
   };
 
   // Per player
-  mainGameLogic = (
+  mainGameLogic = async (
     scoreType: string,
     { x2Pos, x4Pos }: { x2Pos: Array<number>; x4Pos: Array<number> }
   ) => {
@@ -219,13 +239,26 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     this.scrollToPlayer();
 
     // Check Bonus
-    checkBonusScore(curGame, x2Pos, x4Pos);
-    this.scrollToPlayer();
+    if (x2Pos.includes(this.props.currentPlayer.pos)) {
+      this.toggleBonusPopUp("x2");
+      await delay(1500);
+      this.toggleBonusPopUp("x2");
+      checkBonusScore(curGame, x2Pos, x4Pos);
+      this.scrollToPlayer();
+    }
+
+    if (x4Pos.includes(this.props.currentPlayer.pos)) {
+      this.toggleBonusPopUp("x4");
+      await delay(2000);
+      this.toggleBonusPopUp("x4");
+      checkBonusScore(curGame, x2Pos, x4Pos);
+      this.scrollToPlayer();
+    }
 
     changePlayer();
   };
 
-  handleGamePlay = (data: Array<IScoresAll>) => {
+  handleGamePlay = async (data: Array<IScoresAll>) => {
     const {
       // Selector state
       updateData,
@@ -262,29 +295,29 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     toggleBeginCurrentGame();
 
     for (let i = 0; i < 10; i++) {
-      setTimeout(() => {
-        this.mainGameLogic(scoreType!, { x2Pos, x4Pos });
+      await this.mainGameLogic(scoreType!, { x2Pos, x4Pos });
 
-        if (i === 9) {
-          setTimeout(() => {
-            // End game and update data
-            toggleBeginCurrentGame();
-            updateData(data);
+      if (i === 9) {
+        setTimeout(() => {
+          // End game and update data
+          toggleBeginCurrentGame();
+          updateData(data);
 
-            // Write file to be restored if unexpected bug happens
-            writeJSONData({
-              game: {
-                currentGame: this.props.curGame,
-                gameData: this.props.gameData
-              },
-              players: {
-                current: this.props.currentPlayer,
-                all: this.props.allPlayers
-              }
-            });
-          }, 1000);
-        }
-      }, 2000 * i);
+          // Write file to be restored if unexpected bug happens
+          writeJSONData({
+            game: {
+              currentGame: this.props.curGame,
+              gameData: this.props.gameData
+            },
+            players: {
+              current: this.props.currentPlayer,
+              all: this.props.allPlayers
+            }
+          });
+        }, 4000);
+      }
+
+      await delay(1500);
     }
   };
 
@@ -419,6 +452,22 @@ class Game extends React.Component<Props, { openModal: boolean }> {
                   ))}
                 </Stage>
               )}
+              {this.state.x2PopUp ? (
+                <Modal open={this.state.x2PopUp} basic size="small">
+                  <Header icon="browser" content="Cookies policy" />
+                  <Modal.Content>
+                    <h3>X2</h3>
+                  </Modal.Content>
+                </Modal>
+              ) : null}
+              {this.state.x4PopUp ? (
+                <Modal open={this.state.x4PopUp} basic size="small">
+                  <Header icon="browser" content="Cookies policy" />
+                  <Modal.Content>
+                    <h3>X4</h3>
+                  </Modal.Content>
+                </Modal>
+              ) : null}
             </div>
           </Grid.Column>
           <Grid.Column width={6}>
