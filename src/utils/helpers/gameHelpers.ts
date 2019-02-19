@@ -1,8 +1,11 @@
 // import { IAllPlayersGameScore } from '../../store/game/types'
 
-export const delay = (fun: Function, time: number) => {
-  return setTimeout(fun, time)
-}
+// export const delay = (fun: Function, time: number) => {
+//   return setTimeout(fun, time);
+// };
+
+export const delay = (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));
 
 // export const updatePlayerScores = (
 //   datFromFile: Array<IAllPlayersGameScore>,
