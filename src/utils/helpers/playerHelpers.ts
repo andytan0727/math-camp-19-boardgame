@@ -53,12 +53,7 @@ export const generatePlayer = (curPlayerId: number): ISinglePlayerObj => ({
   color: getRandomColor()!,
   pos: 1,
   path: [1],
-  game: [
-    {
-      score: 0,
-      extra: 0
-    }
-  ]
+  game: []
 });
 
 export const getPlayerCoordinates = (pos: string, grid: grid) => {

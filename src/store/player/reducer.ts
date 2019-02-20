@@ -1,11 +1,9 @@
 import produce from "immer";
 import {
   ADD_NEW_PLAYER,
-  MOVE_PLAYER,
   CHANGE_PLAYER,
   UPDATE_CURRENT_GAME_SCORE,
   MOVE_ONCE_PER_PLAYER,
-  CHECK_BONUS_SCORE,
   RESTORE_PLAYERS
 } from "../../utils/constants/actionTypes";
 import {
@@ -51,46 +49,23 @@ export const players = produce((draft, action: PlayerActions) => {
       return draft;
     }
 
-    case MOVE_PLAYER: {
-      draft.all.forEach(player => {
-        const newPos =
-          player.pos + player.game[action.payload.curGame - 1].score;
+    case UPDATE_CURRENT_GAME_SCORE: {
+      const gameData = action.payload.data;
+      const len = draft.all.length;
 
-        // New position less than 300
-        // Not yet win
-        if (newPos < 300 && newPos >= 1) {
-          player.pos = newPos;
-          player.path.push(newPos);
-
-          if (draft.current.id === player.id) {
-            draft.current.pos = newPos;
-            draft.current.path.push(newPos);
-          }
-        } else if (newPos < 1) {
-          player.pos = 1;
-          player.path.push(player.pos);
-          console.log(
-            `Player-${
-              player.id
-            } falls beyond minimum board position. Remaining at position 1 ...`
-          );
-        } else {
-          player.pos = 300;
-          player.path.push(player.path.includes(player.pos) ? player.pos : 0);
-          console.log(`Player-${player.id} won!!! Applause!!!`);
+      for (let i = 0; i < len; i++) {
+        if (i === draft.current.id - 1) {
+          draft.current.game[0] = gameData[i];
         }
-      });
+
+        draft.all[i].game[0] = gameData[i];
+      }
 
       return draft;
     }
 
     case MOVE_ONCE_PER_PLAYER: {
-      const curScore = draft.current.game[action.payload.curGame - 1].score;
-      const curExtra = draft.current.game[action.payload.curGame - 1].extra;
-      const newPos =
-        action.payload.scoreType.toLowerCase() === "score"
-          ? draft.current.pos + curScore
-          : draft.current.pos + curExtra;
+      const newPos = draft.current.game[0];
 
       // New position less than 300
       // Not yet win
@@ -123,47 +98,8 @@ export const players = produce((draft, action: PlayerActions) => {
       return draft;
     }
 
-    case CHECK_BONUS_SCORE: {
-      const pos = draft.current.pos;
-      const curExtra = draft.current.game[action.payload.curGame - 1].extra;
-      const x2Pos = action.payload.pos.x2Pos;
-      const x4Pos = action.payload.pos.x4Pos;
-      draft.current.pos = x2Pos.includes(pos)
-        ? pos + curExtra * 2
-        : x4Pos.includes(pos)
-        ? pos + curExtra * 4
-        : pos;
-
-      // Update all players array with new position
-      draft.all[draft.current.id - 1] = draft.current;
-
-      return draft;
-    }
-
     case CHANGE_PLAYER: {
       draft.current = getNextPlayer(draft);
-      return draft;
-    }
-
-    case UPDATE_CURRENT_GAME_SCORE: {
-      const curGame = action.payload.curGame;
-      const { score, extra } = action.payload.data[curGame - 1];
-      const len = draft.all.length;
-
-      for (let i = 0; i < len; i++) {
-        if (i === draft.current.id - 1) {
-          draft.current.game[curGame - 1] = {
-            score: score[i],
-            extra: extra[i]
-          };
-        }
-
-        draft.all[i].game[curGame - 1] = {
-          score: score[i],
-          extra: extra[i]
-        };
-      }
-
       return draft;
     }
 

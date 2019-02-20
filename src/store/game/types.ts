@@ -8,8 +8,6 @@ import {
   RESTORE_GAME
 } from "../../utils/constants/actionTypes";
 
-import { IScoresAll } from "../player/types";
-
 /**
  * Game states
  */
@@ -27,7 +25,8 @@ export interface IGameState {
   startGame: boolean;
   currentGame: number;
   beginCurrentGame: boolean;
-  gameData: Array<IScoresAll>;
+  // gameData: Array<IScoresAll>;
+  gameData: Array<number>;
   bonusPos: IBonusPos;
 }
 
@@ -45,14 +44,14 @@ interface NextGameAction {
 interface InitializeDataAction {
   type: typeof INITIALIZE_DATA;
   payload: {
-    data: Array<IScoresAll>;
+    data: Array<number>;
   };
 }
 
 interface UpdateDataAction {
   type: typeof UPDATE_DATA;
   payload: {
-    data: Array<IScoresAll>;
+    data: Array<number>;
   };
 }
 
@@ -72,7 +71,7 @@ interface RestoreGameAction {
   payload: {
     game: {
       currentGame: number;
-      gameData: Array<IScoresAll>;
+      gameData: Array<number>;
     };
   };
 }

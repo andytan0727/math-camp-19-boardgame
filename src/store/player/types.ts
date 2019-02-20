@@ -1,8 +1,6 @@
 import {
   ADD_NEW_PLAYER,
-  MOVE_PLAYER,
   MOVE_ONCE_PER_PLAYER,
-  CHECK_BONUS_SCORE,
   CHANGE_PLAYER,
   UPDATE_CURRENT_GAME_SCORE,
   RESTORE_PLAYERS
@@ -16,25 +14,13 @@ export interface ISinglePlayerObj {
   name: string;
   pos: number;
   color: string;
-  game: Array<IScores>;
-  path: number[];
-}
-
-// -----------------------------------------
-// Interfaces for processing data from external JSON file
-export interface IScores {
-  score: number;
-  extra: number;
-}
-
-export interface IScoresAll {
-  score: number[];
-  extra: number[];
+  game: Array<number>;
+  path: Array<number>;
 }
 
 export interface ISinglePlayerData {
   id: number;
-  game: Array<IScores>;
+  game: Array<number>;
 }
 
 export interface IUpdatedData {
@@ -56,30 +42,8 @@ interface AddNewPlayerAction {
   type: typeof ADD_NEW_PLAYER;
 }
 
-interface MovePlayerAction {
-  type: typeof MOVE_PLAYER;
-  payload: {
-    curGame: number;
-  };
-}
-
 interface MoveOncePerPlayerAction {
   type: typeof MOVE_ONCE_PER_PLAYER;
-  payload: {
-    curGame: number;
-    scoreType: string;
-  };
-}
-
-interface CheckBonusScoreAction {
-  type: typeof CHECK_BONUS_SCORE;
-  payload: {
-    curGame: number;
-    pos: {
-      x2Pos: Array<number>;
-      x4Pos: Array<number>;
-    };
-  };
 }
 
 interface ChangePlayerAction {
@@ -89,9 +53,7 @@ interface ChangePlayerAction {
 interface UpdateCurrentGameScoreAction {
   type: typeof UPDATE_CURRENT_GAME_SCORE;
   payload: {
-    curGame: number;
-    data: Array<IScoresAll>;
-    // data: IScoresAll;
+    data: Array<number>;
   };
 }
 
@@ -106,9 +68,7 @@ interface RestorePlayersAction {
 }
 
 export type PlayerActions = AddNewPlayerAction &
-  MovePlayerAction &
   MoveOncePerPlayerAction &
-  CheckBonusScoreAction &
   ChangePlayerAction &
   UpdateCurrentGameScoreAction &
   RestorePlayersAction;

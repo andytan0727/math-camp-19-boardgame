@@ -83,9 +83,13 @@ export const getGameData = createDeepEqualSelector(
   gameData => gameData
 );
 
-export const getCurrentGamePreviousData = createDeepEqualSelector(
-  [currentGame, gameData],
-  (curGame, data) => data[curGame - 1]
+// export const getCurrentGamePreviousData = createDeepEqualSelector(
+//   [currentGame, gameData],
+//   (curGame, data) => data[curGame - 1]
+// );
+export const getCurrentGamePreviousData = createSelector(
+  gameData,
+  data => data
 );
 
 export const getBonusPos = createSelector(
@@ -108,7 +112,8 @@ export const getCurrentPlayer = createDeepEqualSelector(
 export const getCurrentPlayerScore = createSelector(
   [getCurrentGame, getCurrentPlayer],
   (curGame, curPlayer) =>
-    curPlayer.game[curGame - 1] && curPlayer.game[curGame - 1].score
+    // curPlayer.game[curGame - 1] && curPlayer.game[curGame - 1].score
+    curPlayer.game.length && curPlayer.game[0]
 );
 
 export const getCurrentPlayerPos = createSelector(

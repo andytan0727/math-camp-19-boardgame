@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Stage } from "react-konva";
-import { Grid, Header, Segment, Button, Modal } from "semantic-ui-react";
+import { Grid, Header, Segment, Button } from "semantic-ui-react";
 import { isEqual, debounce } from "lodash";
 import {
   initializeWatcher,
@@ -27,9 +27,7 @@ import {
 import {
   addNewPlayer,
   updateCurrentGameScore,
-  movePlayer,
   moveOncePerPlayer,
-  checkBonusScore,
   changePlayer,
   restorePlayers
 } from "./store/player/action";
@@ -62,7 +60,7 @@ import RestoreGameModal from "./components/panel/RestoreGameModal";
 import styles from "./styles/Game.module.css";
 
 // Interfaces
-import { ISinglePlayerObj, IScoresAll } from "./store/player/types";
+import { ISinglePlayerObj } from "./store/player/types";
 import { AppState } from "./store";
 import { FSWatcher } from "chokidar";
 import { ILayout, IGridDim, ITileDim } from "./store/board/types";
@@ -81,8 +79,8 @@ interface Selectors {
   isGameStarted: boolean;
   curGame: number;
   beginCurGame: boolean;
-  curGamePrevData: IScoresAll;
-  gameData: Array<IScoresAll>;
+  curGamePrevData: Array<number>;
+  gameData: Array<number>;
   bonusPos: IBonusPos;
 
   // Player
@@ -110,9 +108,7 @@ interface ConnectedDispatch {
   // Player dispatch
   addNewPlayer: typeof addNewPlayer;
   updateCurrentGameScore: typeof updateCurrentGameScore;
-  movePlayer: typeof movePlayer;
   moveOncePerPlayer: typeof moveOncePerPlayer;
-  checkBonusScore: typeof checkBonusScore;
   changePlayer: typeof changePlayer;
   restorePlayers: typeof restorePlayers;
 }
@@ -122,19 +118,14 @@ type Props = OwnProps & ConnectedDispatch & Selectors;
 let watchFileListener: Promise<FSWatcher> | undefined;
 
 // Main component
-class Game extends React.Component<
-  Props,
-  { openModal: boolean; x2PopUp: boolean; x4PopUp: boolean }
-> {
+class Game extends React.Component<Props, { openModal: boolean }> {
   private mainBoard: React.RefObject<HTMLDivElement>;
 
   constructor(props: Props) {
     super(props);
     this.state = {
       // Restore game modal
-      openModal: false,
-      x2PopUp: false,
-      x4PopUp: false
+      openModal: false
     };
     this.mainBoard = React.createRef();
   }
@@ -184,20 +175,6 @@ class Game extends React.Component<
     }));
   };
 
-  toggleBonusPopUp = (typeOfPopUp: string) => {
-    if (typeOfPopUp.toLowerCase() === "x2") {
-      this.setState(prevState => ({
-        x2PopUp: !prevState.x2PopUp
-      }));
-    }
-
-    if (typeOfPopUp.toLowerCase() === "x4") {
-      this.setState(prevState => ({
-        x4PopUp: !prevState.x4PopUp
-      }));
-    }
-  };
-
   handleRestoreGame = async () => {
     const { restoreGame, restorePlayers } = this.props;
     const fs = await import("fs");
@@ -222,80 +199,45 @@ class Game extends React.Component<
   };
 
   // Per player
-  mainGameLogic = async (
-    scoreType: string,
-    { x2Pos, x4Pos }: { x2Pos: Array<number>; x4Pos: Array<number> }
-  ) => {
+  mainGameLogic = async () => {
     const {
       // layout,
-      curGame,
       moveOncePerPlayer,
-      checkBonusScore,
       changePlayer
     } = this.props;
 
     // Move player according to score/extra
-    moveOncePerPlayer(this.props.curGame, scoreType);
+    moveOncePerPlayer();
     this.scrollToPlayer();
-
-    // Check Bonus
-    if (x2Pos.includes(this.props.currentPlayer.pos)) {
-      this.toggleBonusPopUp("x2");
-      await delay(1500);
-      this.toggleBonusPopUp("x2");
-      checkBonusScore(curGame, x2Pos, x4Pos);
-      this.scrollToPlayer();
-    }
-
-    if (x4Pos.includes(this.props.currentPlayer.pos)) {
-      this.toggleBonusPopUp("x4");
-      await delay(2000);
-      this.toggleBonusPopUp("x4");
-      checkBonusScore(curGame, x2Pos, x4Pos);
-      this.scrollToPlayer();
-    }
 
     changePlayer();
   };
 
-  handleGamePlay = async (data: Array<IScoresAll>) => {
+  handleGamePlay = async (data: Array<number>) => {
     const {
       // Selector state
       updateData,
       updateCurrentGameScore,
       curGamePrevData,
-      curGame,
-      bonusPos,
 
       // Action
       toggleBeginCurrentGame
     } = this.props;
 
-    const scoreType: string | undefined = isEqual(
-      curGamePrevData.score,
-      data[curGame - 1].score
-    )
-      ? isEqual(curGamePrevData.extra, data[curGame - 1].extra)
-        ? undefined
-        : "extra"
-      : "score";
-
     // Don't perform game play if there is no changes in scores
-    if (!scoreType) {
+    console.log(`data: ${data}, prev: ${curGamePrevData}`);
+    if (isEqual(data, curGamePrevData)) {
       console.log("No change in file.");
       return;
     }
 
-    const x2Pos = bonusPos.x2.map(val => val.pos);
-    const x4Pos = bonusPos.x4.map(val => val.pos);
-
-    updateCurrentGameScore(curGame, data);
+    updateCurrentGameScore(data);
 
     // Begin game
     toggleBeginCurrentGame();
 
     for (let i = 0; i < 10; i++) {
-      await this.mainGameLogic(scoreType!, { x2Pos, x4Pos });
+      await this.mainGameLogic();
 
       if (i === 9) {
         setTimeout(() => {
@@ -306,7 +248,7 @@ class Game extends React.Component<
           // Write file to be restored if unexpected bug happens
           writeJSONData({
             game: {
-              currentGame: this.props.curGame,
+              // currentGame: this.props.curGame,
               gameData: this.props.gameData
             },
             players: {
@@ -324,8 +266,8 @@ class Game extends React.Component<
   componentDidMount() {
     const {
       // Actions
-      initializeData,
-      setGame
+      initializeData
+      // setGame
     } = this.props;
 
     // Initialize board size and coordinates when mounted
@@ -352,7 +294,7 @@ class Game extends React.Component<
                 const gameDataJson = JSON.parse(rawGameData);
 
                 // Dispatch an action to Redux
-                initializeData(gameDataJson["gameScores"]);
+                initializeData(gameDataJson);
               }
             })
             .on(
@@ -367,15 +309,10 @@ class Game extends React.Component<
 
                 if (rawGameData && this.props.isGameStarted) {
                   const jsonData = JSON.parse(rawGameData);
-                  const gameData = jsonData["gameScores"];
-                  const curGameNum: number = jsonData["curGame"];
                   console.log("Updating data..");
 
-                  // Dispatch actions
-                  setGame(curGameNum);
-
                   // Perform game play and then update previous game data
-                  this.handleGamePlay(gameData);
+                  this.handleGamePlay(jsonData);
                 }
               }, 1500)
             )
@@ -452,22 +389,6 @@ class Game extends React.Component<
                   ))}
                 </Stage>
               )}
-              {this.state.x2PopUp ? (
-                <Modal open={this.state.x2PopUp} basic size="small">
-                  <Header icon="browser" content="Cookies policy" />
-                  <Modal.Content>
-                    <h3>X2</h3>
-                  </Modal.Content>
-                </Modal>
-              ) : null}
-              {this.state.x4PopUp ? (
-                <Modal open={this.state.x4PopUp} basic size="small">
-                  <Header icon="browser" content="Cookies policy" />
-                  <Modal.Content>
-                    <h3>X4</h3>
-                  </Modal.Content>
-                </Modal>
-              ) : null}
             </div>
           </Grid.Column>
           <Grid.Column width={6}>
@@ -565,9 +486,7 @@ export default connect(
     // players
     addNewPlayer,
     updateCurrentGameScore,
-    movePlayer,
     moveOncePerPlayer,
-    checkBonusScore,
     changePlayer,
     restorePlayers
   }
