@@ -1,14 +1,12 @@
 // Constants
 import {
   ADD_NEW_PLAYER,
-  MOVE_PLAYER,
   MOVE_ONCE_PER_PLAYER,
-  CHECK_BONUS_SCORE,
   CHANGE_PLAYER,
   UPDATE_CURRENT_GAME_SCORE,
   RESTORE_PLAYERS
 } from "../../utils/constants/actionTypes";
-import { IScoresAll, ISinglePlayerObj } from "./types";
+import { ISinglePlayerObj } from "./types";
 
 // Actions
 export const addNewPlayer = () => {
@@ -17,39 +15,9 @@ export const addNewPlayer = () => {
   };
 };
 
-export const movePlayer = (curGame: number) => {
+export const moveOncePerPlayer = () => {
   return {
-    type: MOVE_PLAYER,
-    payload: {
-      curGame
-    }
-  };
-};
-
-export const moveOncePerPlayer = (curGame: number, scoreType: string) => {
-  return {
-    type: MOVE_ONCE_PER_PLAYER,
-    payload: {
-      curGame,
-      scoreType
-    }
-  };
-};
-
-export const checkBonusScore = (
-  curGame: number,
-  x2Pos: Array<number>,
-  x4Pos: Array<number>
-) => {
-  return {
-    type: CHECK_BONUS_SCORE,
-    payload: {
-      curGame,
-      pos: {
-        x2Pos,
-        x4Pos
-      }
-    }
+    type: MOVE_ONCE_PER_PLAYER
   };
 };
 
@@ -59,14 +27,10 @@ export const changePlayer = () => {
   };
 };
 
-export const updateCurrentGameScore = (
-  curGame: number,
-  data: Array<IScoresAll>
-) => {
+export const updateCurrentGameScore = (data: Array<number>) => {
   return {
     type: UPDATE_CURRENT_GAME_SCORE,
     payload: {
-      curGame,
       data
     }
   };
