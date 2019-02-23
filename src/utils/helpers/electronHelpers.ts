@@ -5,8 +5,9 @@ export const isElectron = navigator.userAgent
 
 export const initializeWatcher = async () => {
   const chokidar = await import("chokidar");
+  const path = await import("path");
   const gameDataFolder = await getGameDataFolder();
-  const watcher = chokidar.watch(gameDataFolder, {
+  const watcher = chokidar.watch(path.join(gameDataFolder, "game.json"), {
     ignored: /[\/\\]\./,
     persistent: true
   });
