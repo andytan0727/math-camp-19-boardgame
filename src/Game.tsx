@@ -50,6 +50,7 @@ import {
 } from "./store/selector";
 
 // Components
+import CanvasLoader from "./components/canvas/CanvasLoader";
 import CanvasGrid from "./components/canvas/CanvasGrid";
 import CanvasPlayer from "./components/canvas/CanvasPlayer";
 import CanvasScore from "./components/canvas/CanvasScore";
@@ -118,13 +119,17 @@ type Props = OwnProps & ConnectedDispatch & Selectors;
 let watchFileListener: Promise<FSWatcher> | undefined;
 
 // Main component
-class Game extends React.Component<Props, { openModal: boolean }> {
+class Game extends React.Component<
+  Props,
+  { loadingStage: boolean; openModal: boolean }
+> {
   private mainBoard: React.RefObject<HTMLDivElement>;
 
   constructor(props: Props) {
     super(props);
     this.state = {
       // Restore game modal
+      loadingStage: true,
       openModal: false
     };
     this.mainBoard = React.createRef();
@@ -262,18 +267,22 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     }
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const {
       // Actions
       initializeData
       // setGame
     } = this.props;
 
+    await delay(2000);
+    this.setState({
+      loadingStage: false
+    });
     // Initialize board size and coordinates when mounted
     this.setBoardDimensions();
 
     // Scroll to first player (bottom)
-    setTimeout(this.scrollToPlayer, 2000);
+    this.scrollToPlayer();
 
     // Update dimensions accordingly when resize
     window.addEventListener("resize", debounce(this.handleResize, 500));
@@ -360,35 +369,39 @@ class Game extends React.Component<Props, { openModal: boolean }> {
       box
     };
 
-    const { openModal: open } = this.state;
+    const { loadingStage, openModal: open } = this.state;
 
     return (
       <div className={styles.mainGame}>
         <Grid centered columns={2} divided>
           <Grid.Column width={10}>
-            <div ref={this.mainBoard}>
-              {width && (
-                <Stage
-                  width={width}
-                  height={height}
-                  scaleX={boardScale}
-                  scaleY={boardScale}
-                >
-                  <CanvasGrid grid={board} />
-                  <CanvasScore layout={layout} pos={bonusPos} />
-                  {allPlayers.map((person: ISinglePlayerObj) => (
-                    <CanvasPlayer
-                      key={`player_${person.id}`}
-                      player={person}
-                      current={currentPlayer}
-                      layout={this.props.layout}
-                      box={this.props.box}
-                      beginCurGame={beginCurGame}
-                    />
-                  ))}
-                </Stage>
-              )}
-            </div>
+            {loadingStage ? (
+              <CanvasLoader />
+            ) : (
+              <div ref={this.mainBoard}>
+                {width && (
+                  <Stage
+                    width={width}
+                    height={height}
+                    scaleX={boardScale}
+                    scaleY={boardScale}
+                  >
+                    <CanvasGrid grid={board} />
+                    <CanvasScore layout={layout} pos={bonusPos} />
+                    {allPlayers.map((person: ISinglePlayerObj) => (
+                      <CanvasPlayer
+                        key={`player_${person.id}`}
+                        player={person}
+                        current={currentPlayer}
+                        layout={this.props.layout}
+                        box={this.props.box}
+                        beginCurGame={beginCurGame}
+                      />
+                    ))}
+                  </Stage>
+                )}
+              </div>
+            )}
           </Grid.Column>
           <Grid.Column width={6}>
             <div className={styles.playerSidePanel}>
