@@ -53,10 +53,6 @@ class CanvasGridBox extends React.PureComponent<CanvasGridBoxProps, {}> {
 }
 
 class CanvasGrid extends React.Component<CanvasGridProps, {}> {
-  componentWillUpdate() {
-    console.log("receiving props...");
-  }
-
   render() {
     const {
       layout,

@@ -225,7 +225,6 @@ class Game extends React.Component<Props, { openModal: boolean }> {
     } = this.props;
 
     // Don't perform game play if there is no changes in scores
-    console.log(`data: ${data}, prev: ${curGamePrevData}`);
     if (isEqual(data, curGamePrevData)) {
       console.log("No change in file.");
       return;
