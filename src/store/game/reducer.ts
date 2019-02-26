@@ -13,40 +13,78 @@ import {
 // Interfaces
 import { IGameState, GameAction } from "./types";
 
+const bonusPosArr = {
+  x2PosArr: [
+    23,
+    27,
+    30,
+    34,
+    52,
+    56,
+    58,
+    65,
+    68,
+    73,
+    78,
+    81,
+    91,
+    93,
+    99,
+    108,
+    111,
+    118,
+    121,
+    125,
+    129,
+    132,
+    135,
+    138,
+    140,
+    149,
+    153,
+    155,
+    160,
+    165,
+    169,
+    173,
+    175,
+    179,
+    184,
+    198,
+    204,
+    209,
+    211,
+    213,
+    215,
+    219,
+    226,
+    231,
+    233,
+    235,
+    238,
+    241,
+    251,
+    254,
+    259,
+    274
+  ],
+  x4PosArr: [41, 44, 48, 62, 63, 96, 143, 151, 171, 189, 190, 191, 201]
+};
+
 const initialState: IGameState = {
   startGame: true,
   currentGame: 1,
   beginCurrentGame: false,
   gameData: [],
   bonusPos: {
-    x2: [
-      {
-        id: 1,
-        pos: 20
-      },
-      {
-        id: 2,
-        pos: 40
-      },
-      {
-        id: 3,
-        pos: 66
-      }
-    ],
-    x4: [
-      {
-        id: 1,
-        pos: 30
-      },
-      {
-        id: 2,
-        pos: 50
-      },
-      {
-        id: 3,
-        pos: 85
-      }
-    ]
+    x2: Array.from(
+      { length: bonusPosArr.x2PosArr.length },
+      (_, idx) => idx
+    ).map(val => ({ id: val + 1, pos: bonusPosArr.x2PosArr[val] })),
+    x4: Array.from(
+      { length: bonusPosArr.x4PosArr.length },
+      (_, idx) => idx
+    ).map(val => ({ id: val + 1, pos: bonusPosArr.x4PosArr[val] }))
   }
 };
 

@@ -5,7 +5,7 @@
     "email": "andytan0727@gmail.com"
   },
   "description": "Board game designed for UUM Math Camp 2019.",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "private": true,
   "main": "public/electron.js",
   "homepage": "./",
