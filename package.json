@@ -32,7 +32,8 @@
     "reselect": "^4.0.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.84.0",
-    "typescript": "^3.2.4"
+    "typescript": "^3.2.4",
+    "snyk": "^1.189.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -43,7 +44,9 @@
     "build:croco": "craco build",
     "electron-dev": "concurrently \"cross-env BROWSER=none yarn start:croco \" \"wait-on http://localhost:3000 && electron .\"",
     "preelectron-pack": "yarn build:croco",
-    "electron-pack": "build --win"
+    "electron-pack": "build --win",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -86,5 +89,6 @@
   },
   "peerDependencies": {
     "prop-types": "^15.6.2"
-  }
+  },
+  "snyk": true
 }
