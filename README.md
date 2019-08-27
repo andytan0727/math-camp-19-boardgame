@@ -1,6 +1,7 @@
 # Math Camp BoardGame 2019
---------------------------
 [![Known Vulnerabilities](https://snyk.io/test/github/andytan0727/math-camp-19-boardgame/badge.svg)](https://snyk.io/test/github/andytan0727/math-camp-19-boardgame) 
+
+## Note: This repo is archived following the end of UUM Math Camp 2019. This repo is still available for those who might need it in the future.
 
 ## Available Scripts
 
